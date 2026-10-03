@@ -4,6 +4,8 @@ An AI agent that tells Nigerian university applicants whether their **UTME subje
 
 Built for the DEV × Sanity Challenge, Path One: "Ship an Agent That Queries Real Content".
 
+**Live:** https://clearancedesk.vercel.app (no login). The About page shows the architecture and live data coverage.
+
 **Core principle: the model finds and explains; deterministic code judges.**
 
 > 🚧 Work in progress. See [`BUILD_SPEC.md`](BUILD_SPEC.md) for the plan and [`BUILD_LOG.md`](BUILD_LOG.md) for the build journal.

@@ -199,3 +199,35 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
 - **Blocked:** Anthropic returned "credit balance is too low" for the key copied from the vouch project, part-way through testing. The UI was then checked against responses recorded earlier in this session, served as local mocks that were never committed.
   - The two agent fixes above are covered by unit tests and a live Sanity check.
   - They have **not** been re-run end-to-end against Claude. That needs credit.
+
+## 2026-10-03 — Phase 7: deploy
+
+- Used the Vercel CLI (60.1.3, logged in as big14way) instead of the dashboard.
+  - `vercel project add clearance-desk`, then `project update --root-directory web --framework nextjs --node-version 24.x`.
+  - `vercel link` and `vercel git connect` link it to big14way/clearancedesk, so every push to `main` deploys to production.
+- **Env vars:** all 10 keys from `web/.env.local` were added to Production and Preview by a small script.
+  - It pipes each value through stdin, so no secret appears in a process list or in this log.
+  - `SANITY_ORGANIZATION_TOKEN` and `ANTHROPIC_API_KEY` are stored as Sensitive.
+- **Fixed before deploying:** the two-lockfile warning from Phase 5. `next.config.ts` now pins `turbopack.root` and `outputFileTracingRoot` to `web/`. The app imports nothing outside it, and the warning is gone.
+- **Build:** 34 s, first try.
+  - Vercel's default alias was `clearance-desk-six.vercel.app`, because `clearance-desk.vercel.app` is taken.
+  - At the human's request I added the shorter `clearancedesk.vercel.app` as a project domain. I first checked it was unclaimed: it returned `DEPLOYMENT_NOT_FOUND`.
+- **Checks on production:**
+  - `/` and `/about` return 200 with no login redirect.
+  - `/about` shows the live count (34 requirements).
+  - `/api/check` validates input (400 with field issues).
+- **The schema is unchanged since Phase 2.** The rules endpoint already lists `olevelMinCreditsCombined`, so no redeploy was needed.
+- **Blocked:** a real check returns the generic 502. The runtime log shows the cause: `AI_APICallError: Your credit balance is too low`.
+  - That error comes from the last step (the model call), after the Sanity token, both Context endpoints and the initial-context fetch have worked in production.
+  - The three sample candidates can't be tested on production until the Anthropic account has credit.
+- **After the human added credit, ran 5 live checks against https://clearancedesk.vercel.app/api/check**, the same requests the sample buttons send:
+  - Ada (UNILAG CS) → ELIGIBLE.
+  - Tunde (LASU Nursing) → AT_RISK, because his NECO 2026 result is awaited.
+  - Chioma (UNILAG Medicine) → NOT_ELIGIBLE.
+  - Explore (Maths/Economics/Government at UNILAG + LASU) → 3 AT_RISK + UNILAG Law NOT_ELIGIBLE.
+  - Petroleum Engineering at UNILAG → `noDataReason`.
+  - All 5 have `explained: true`, and every trace is `rules_groq_query → evaluate_eligibility → policy_knowledge_base_read → submit_verdict`. The no-data case is two GROQ queries and then `submit_verdict`.
+  - Policy notes now carry real source titles and badges: for example "LASU — 2026/2027 screening portal reopening…" (Official), and a LASU cut-off blog (Secondary).
+  - Times: 17–40 s with all five running at once.
+  - This also confirms both Phase 6 agent fixes end-to-end.
+- **Not done by me:** a tap-through of the production UI. The Chrome extension couldn't drive a background tab while the human's Sanity tab had focus, so I stopped after two failed attempts. The UI was checked locally at 360px in Phase 6, and the API calls behind each button pass on production. The spec's "test from a phone" step is left for the human.
