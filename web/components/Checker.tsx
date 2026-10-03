@@ -1,12 +1,14 @@
 'use client'
 
 import {useEffect, useRef, useState} from 'react'
-import type {CheckResponse} from '@/lib/agent/run'
+import type {CheckResponse, TraceStep} from '@/lib/agent/run'
 import type {Verdict} from '@/lib/eligibility/types'
 import type {FormOptions} from '@/lib/sanity/queries'
 import {SAMPLES, type Sample} from '@/lib/samples'
 import {CandidateForm} from './CandidateForm'
+import {LiveProgress} from './LiveProgress'
 import {Disclaimer} from './Disclaimer'
+import {FollowUp} from './FollowUp'
 import {emptyForm, fromSample, toRequest, type FormState} from './form-state'
 import {AlertIcon, CheckIcon, CrossIcon, InfoIcon} from './icons'
 import {TracePanel} from './TracePanel'
@@ -25,6 +27,9 @@ export function Checker({options}: {options: FormOptions}) {
   const [formErrors, setFormErrors] = useState<string[]>([])
   const [status, setStatus] = useState<Status>('idle')
   const [response, setResponse] = useState<CheckResponse | null>(null)
+  // While streaming: finished tool calls, and the verdicts as soon as the code has decided them.
+  const [liveSteps, setLiveSteps] = useState<TraceStep[]>([])
+  const [preview, setPreview] = useState<CheckResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [elapsed, setElapsed] = useState(0)
   const [activeSample, setActiveSample] = useState<string | null>(null)
@@ -45,6 +50,12 @@ export function Checker({options}: {options: FormOptions}) {
     if (status === 'done' || status === 'error') results.current?.focus({preventScroll: true})
   }, [status])
 
+  // Bring the verdict into view the moment the code has decided it, before the explanation arrives.
+  const hasPreview = preview !== null
+  useEffect(() => {
+    if (hasPreview) results.current?.scrollIntoView({behavior: 'smooth', block: 'start'})
+  }, [hasPreview])
+
   async function run(state: FormState) {
     const built = toRequest(state)
     if ('errors' in built) {
@@ -57,23 +68,55 @@ export function Checker({options}: {options: FormOptions}) {
     abort.current = controller
     setElapsed(0)
     setResponse(null)
+    setPreview(null)
+    setLiveSteps([])
     setError(null)
     setStatus('loading')
     try {
       const res = await fetch('/api/check', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', Accept: 'application/x-ndjson'},
         body: JSON.stringify(built.request),
         signal: controller.signal,
       })
-      const body = await res.json().catch(() => null)
-      if (!res.ok || !body) {
+      if (!res.ok || !res.body) {
+        const body = await res.json().catch(() => null)
         setError(body?.error ?? 'Something went wrong while checking. Please try again.')
         setStatus('error')
         return
       }
-      setResponse(body as CheckResponse)
-      setStatus('done')
+      // One JSON event per line: step, verdicts, then done (or error).
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let finished = false
+      for (;;) {
+        const {done, value} = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, {stream: true})
+        let newline: number
+        while ((newline = buffer.indexOf('\n')) >= 0) {
+          const line = buffer.slice(0, newline).trim()
+          buffer = buffer.slice(newline + 1)
+          if (!line) continue
+          const event = JSON.parse(line)
+          if (event.type === 'step') setLiveSteps((steps) => [...steps, event.step])
+          else if (event.type === 'verdicts') setPreview(event.response)
+          else if (event.type === 'done') {
+            setResponse(event.response)
+            setStatus('done')
+            finished = true
+          } else if (event.type === 'error') {
+            setError(event.error)
+            setStatus('error')
+            finished = true
+          }
+        }
+      }
+      if (!finished) {
+        setError('The connection closed before the check finished. Please try again.')
+        setStatus('error')
+      }
     } catch (e) {
       if ((e as Error).name === 'AbortError') {
         setStatus('idle')
@@ -142,23 +185,10 @@ export function Checker({options}: {options: FormOptions}) {
 
       <div ref={results} tabIndex={-1} aria-live="polite" className="scroll-mt-4 space-y-4 outline-none">
         {status === 'loading' && (
-          <div className="flex items-start gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <span className="mt-1 size-5 shrink-0 animate-spin rounded-full border-2 border-emerald-700 border-t-transparent" aria-hidden="true" />
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-stone-900">Checking… {elapsed}s</p>
-              <p className="mt-1 text-sm text-stone-700">
-                The agent finds the rules in Sanity, runs the eligibility checks, then reads the admission policy. This usually
-                takes 15 to 40 seconds.
-              </p>
-              <button
-                type="button"
-                onClick={() => abort.current?.abort()}
-                className="mt-3 inline-flex h-10 items-center rounded-lg border border-stone-300 px-3 text-sm font-medium text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-emerald-700"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+          <>
+            <LiveProgress steps={liveSteps} elapsed={elapsed} onCancel={() => abort.current?.abort()} />
+            {preview?.results.map((r) => <VerdictCard key={r.requirementId} result={r} pending />)}
+          </>
         )}
 
         {status === 'error' && error && (
@@ -202,6 +232,8 @@ export function Checker({options}: {options: FormOptions}) {
             {response.results.map((r) => (
               <VerdictCard key={r.requirementId} result={r} />
             ))}
+
+            {response.results.length > 0 && <FollowUp key={response.results.map((r) => r.requirementId).join()} results={response.results} />}
 
             {response.trace.length > 0 && <TracePanel trace={response.trace} model={response.model} />}
           </>

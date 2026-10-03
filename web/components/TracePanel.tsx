@@ -1,8 +1,8 @@
 import type {TraceStep} from '@/lib/agent/run'
 
-type StepInfo = {title: string; where: string; tone: string}
+export type StepInfo = {title: string; where: string; tone: string}
 
-const STEPS: Record<string, StepInfo> = {
+export const STEPS: Record<string, StepInfo> = {
   rules_groq_query: {title: 'Queried the admission rules (GROQ)', where: 'Sanity Context · clearance-rules', tone: 'bg-sky-100 text-sky-900'},
   rules_schema_explorer: {title: 'Looked up the rules schema', where: 'Sanity Context · clearance-rules', tone: 'bg-sky-100 text-sky-900'},
   policy_knowledge_base_read: {title: 'Read Knowledge Base entries', where: 'Sanity Context · clearance-policy', tone: 'bg-violet-100 text-violet-900'},

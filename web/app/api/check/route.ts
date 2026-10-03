@@ -1,33 +1,7 @@
 import {checkRequestSchema, runCheck} from '@/lib/agent/run'
+import {clientIp, countToday, overDailyCap, overIpLimit} from '@/lib/rate-limit'
 
 export const maxDuration = 60
-
-// Best-effort limits, held in memory per server instance.
-const WINDOW_MS = 10 * 60_000
-const PER_IP_PER_WINDOW = 10
-const hits = new Map<string, number[]>()
-let today = {date: '', count: 0}
-
-function clientIp(request: Request): string {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
-  )
-}
-
-function overIpLimit(ip: string): boolean {
-  const now = Date.now()
-  if (hits.size > 5000) hits.clear()
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
-  recent.push(now)
-  hits.set(ip, recent)
-  return recent.length > PER_IP_PER_WINDOW
-}
-
-function overDailyCap(): boolean {
-  const date = new Date().toISOString().slice(0, 10)
-  if (today.date !== date) today = {date, count: 0}
-  return today.count >= (Number(process.env.DAILY_REQUEST_CAP) || 300)
-}
 
 export async function POST(request: Request) {
   if (overIpLimit(clientIp(request))) {
@@ -54,12 +28,42 @@ export async function POST(request: Request) {
     )
   }
 
-  today.count++
+  countToday()
+  const failed = (error: unknown) => {
+    // Logged server-side only; the client never sees raw errors.
+    console.error('[check] failed:', error instanceof Error ? `${error.name}: ${error.message}` : 'unknown error')
+    return {error: 'Something went wrong while checking. Please try again.'}
+  }
+
+  // The app asks for NDJSON: each Sanity Context step as it finishes, the verdicts as soon as the code decides them,
+  // then the full response. Anyone else (the eval, curl) gets one JSON body.
+  if (request.headers.get('accept')?.includes('application/x-ndjson')) {
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        const send = (event: object) => {
+          try {
+            controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
+          } catch {
+            // the client went away; the run still finishes and is logged
+          }
+        }
+        try {
+          send({type: 'done', response: await runCheck(parsed.data, request.signal, send)})
+        } catch (error) {
+          send({type: 'error', ...failed(error)})
+        }
+        controller.close()
+      },
+    })
+    return new Response(stream, {
+      headers: {'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-cache, no-transform'},
+    })
+  }
+
   try {
     return Response.json(await runCheck(parsed.data, request.signal))
   } catch (error) {
-    // Logged server-side only; the client never sees raw errors.
-    console.error('[check] failed:', error instanceof Error ? `${error.name}: ${error.message}` : 'unknown error')
-    return Response.json({error: 'Something went wrong while checking. Please try again.'}, {status: 502})
+    return Response.json(failed(error), {status: 502})
   }
 }

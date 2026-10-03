@@ -49,7 +49,7 @@ export const verdictInputSchema = z.object({
 
 export type VerdictInput = z.infer<typeof verdictInputSchema>
 
-const maybeJson = (value: unknown): unknown => {
+export const maybeJson = (value: unknown): unknown => {
   if (typeof value !== 'string') return value
   try {
     return JSON.parse(value)

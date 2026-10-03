@@ -62,7 +62,8 @@ function CheckRow({check}: {check: CheckResult['checks'][number]}) {
 
 const subheading = 'text-xs font-semibold tracking-wide text-stone-600 uppercase'
 
-export function VerdictCard({result}: {result: CheckResult}) {
+/** `pending`: the verdict is final, but the explanation and policy notes are still being written. */
+export function VerdictCard({result, pending = false}: {result: CheckResult; pending?: boolean}) {
   const v = VERDICT[result.verdict]
   const decided = result.checks.filter((c) => c.status !== 'manual' && c.id !== 'data-status')
   const manual = result.checks.filter((c) => c.status === 'manual')
@@ -87,6 +88,12 @@ export function VerdictCard({result}: {result: CheckResult}) {
 
       <div className="space-y-5 px-4 py-5 sm:px-5">
         {result.explanation && <p className="text-[15px] leading-relaxed text-stone-800">{result.explanation}</p>}
+        {pending && !result.explanation && (
+          <p className="flex items-center gap-2 rounded-lg bg-stone-100 px-3 py-2 text-sm text-stone-700">
+            <span className="size-4 shrink-0 animate-spin rounded-full border-2 border-stone-500 border-t-transparent" aria-hidden="true" />
+            Verdict decided by the checks below. Reading the admission policy and writing your explanation…
+          </p>
+        )}
 
         <section className="space-y-3">
           <h4 className={subheading}>The checks</h4>

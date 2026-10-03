@@ -79,7 +79,7 @@ const MAX_STEPS = 12
 const VERDICT_ORDER: Verdict[] = ['ELIGIBLE', 'AT_RISK', 'NOT_ELIGIBLE']
 
 /** Trims to `max` characters at a word boundary. */
-function clip(text: string, max: number): string {
+export function clip(text: string, max: number): string {
   const t = text.trim()
   if (t.length <= max) return t
   const cut = t.slice(0, max - 1)
@@ -93,7 +93,7 @@ function fallbackHeadline({requirement, result}: Evaluated): string {
   return `You don't meet the published requirements for ${course}.`
 }
 
-function modelOptions(modelId: string) {
+export function modelOptions(modelId: string) {
   // Sonnet 5.5 always thinks; between_tools at low effort is its lightest setting. At medium effort an
   // explore run took up to 52s against the 60s function limit; at low it took 24-32s with similar text.
   if (modelId.startsWith('claude-sonnet-5-5')) {
@@ -122,13 +122,84 @@ function usableVerdict<TOOLS extends ToolSet>(): StopCondition<TOOLS> {
     steps.at(-1)?.toolCalls.some((c) => c.toolName === 'submit_verdict' && readVerdict(c.input) !== null) ?? false
 }
 
-export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal): Promise<CheckResponse> {
+/** Streamed while the agent works: each finished tool call, then the evaluator's verdicts before the explanation. */
+export type CheckEvent =
+  | {type: 'step'; step: TraceStep}
+  | {type: 'verdicts'; response: CheckResponse}
+
+export async function runCheck(
+  request: CheckRequest,
+  abortSignal?: AbortSignal,
+  onEvent?: (event: CheckEvent) => void,
+): Promise<CheckResponse> {
   const modelId = process.env.MODEL_ID || 'claude-sonnet-5-5'
   const evaluated = new Map<string, Evaluated>()
   const [context, names, findSource] = await Promise.all([getInitialContexts(), getSubjectNames(), getSourceLookup()])
 
-  const steps = await withContextTools(async (contextTools) => {
-    const result = await generateText({
+  const trace: TraceStep[] = []
+  const kbPathsRead = new Set<string>()
+  let verdict: VerdictInput | null = null
+
+  const respond = (): CheckResponse => {
+    const written = new Map((verdict?.results ?? []).map((r) => [r.requirementId, r]))
+    const results: CheckResult[] = [...evaluated.values()].map((e) => {
+      const text = written.get(e.result.requirementId)
+      return {
+        requirementId: e.result.requirementId,
+        programme: {_id: e.requirement.programme?._id, title: e.requirement.programme?.title},
+        institution: e.requirement.programme?.institution ?? {},
+        session: e.requirement.session,
+        verdict: e.result.verdict,
+        checks: e.result.checks.map(({id, label, status, detail}) => ({id, label, status, detail})),
+        dataStatus: e.requirement.verificationStatus,
+        conflictNote: e.requirement.conflictNote ?? null,
+        lastVerified: e.requirement.lastVerified ?? null,
+        citations: e.requirement.citations,
+        headline: text?.headline.trim() ? clip(text.headline, 120) : fallbackHeadline(e),
+        explanation: text?.explanation.trim() ? clip(text.explanation, 600) : null,
+        // A policy note must point at an entry this run actually read.
+        policyNotes: (text?.policyNotes ?? [])
+          .filter((n) => kbPathsRead.has(n.kbPath) && n.text.trim())
+          .map((n) => {
+            // Prefer our own source document (title, URL, authority) over what the model copied.
+            const source = findSource({url: n.sourceUrl, title: n.sourceTitle})
+            const url = source?.url ?? (n.sourceUrl && /^https?:\/\//.test(n.sourceUrl) ? n.sourceUrl : undefined)
+            const title = source?.title ?? (n.sourceTitle && !/\.(md|pdf)\b/i.test(n.sourceTitle) ? n.sourceTitle : undefined)
+            return {
+              text: clip(n.text, 400),
+              kbPath: n.kbPath,
+              ...(title ? {sourceTitle: clip(title, 200)} : {}),
+              ...(url ? {sourceUrl: url} : {}),
+              ...(source?.authority ? {authority: source.authority} : {}),
+            }
+          }),
+      }
+    })
+
+    results.sort((a, b) =>
+      request.mode === 'explore'
+        ? VERDICT_ORDER.indexOf(a.verdict) - VERDICT_ORDER.indexOf(b.verdict) ||
+          `${a.institution.shortName} ${a.programme.title}`.localeCompare(`${b.institution.shortName} ${b.programme.title}`)
+        : b.session.localeCompare(a.session),
+    )
+
+    const fallbackReason =
+      request.mode === 'check'
+        ? "Clearance Desk has no published admission requirement for this course yet, so it can't check it. Ask the university or JAMB directly."
+        : 'No course in Clearance Desk’s data matched your UTME subjects.'
+
+    return {
+      mode: request.mode,
+      results,
+      noDataReason: results.length ? null : clip(verdict?.noDataReason?.trim() || fallbackReason, 600),
+      trace: [...trace],
+      explained: verdict !== null,
+      model: modelId,
+    }
+  }
+
+  await withContextTools(async (contextTools) => {
+    await generateText({
       model: anthropic(modelId),
       system: {
         role: 'system',
@@ -144,84 +215,29 @@ export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal)
       maxOutputTokens: 8000,
       providerOptions: {anthropic: modelOptions(modelId)},
       abortSignal,
-    })
-    return result.steps
-  })
-
-  const trace: TraceStep[] = []
-  const kbPathsRead = new Set<string>()
-  let verdict: VerdictInput | null = null
-
-  for (const step of steps) {
-    const failed = new Set(step.content.flatMap((part) => (part.type === 'tool-error' ? [part.toolCallId] : [])))
-    for (const call of step.toolCalls) {
-      trace.push({
-        toolName: call.toolName,
-        input: traceInput(call.toolName, call.input),
-        ...(failed.has(call.toolCallId) ? {error: true as const} : {}),
-      })
-      if (call.toolName === 'policy_knowledge_base_read' && !failed.has(call.toolCallId)) {
-        const paths = (call.input as {paths?: unknown})?.paths
-        if (Array.isArray(paths)) paths.forEach((p) => typeof p === 'string' && kbPathsRead.add(p))
-      }
-      if (call.toolName === 'submit_verdict') verdict = readVerdict(call.input) ?? verdict
-    }
-  }
-
-  const written = new Map((verdict?.results ?? []).map((r) => [r.requirementId, r]))
-
-  const results: CheckResult[] = [...evaluated.values()].map((e) => {
-    const text = written.get(e.result.requirementId)
-    return {
-      requirementId: e.result.requirementId,
-      programme: {_id: e.requirement.programme?._id, title: e.requirement.programme?.title},
-      institution: e.requirement.programme?.institution ?? {},
-      session: e.requirement.session,
-      verdict: e.result.verdict,
-      checks: e.result.checks.map(({id, label, status, detail}) => ({id, label, status, detail})),
-      dataStatus: e.requirement.verificationStatus,
-      conflictNote: e.requirement.conflictNote ?? null,
-      lastVerified: e.requirement.lastVerified ?? null,
-      citations: e.requirement.citations,
-      headline: text?.headline.trim() ? clip(text.headline, 120) : fallbackHeadline(e),
-      explanation: text?.explanation.trim() ? clip(text.explanation, 600) : null,
-      // A policy note must point at an entry this run actually read.
-      policyNotes: (text?.policyNotes ?? [])
-        .filter((n) => kbPathsRead.has(n.kbPath) && n.text.trim())
-        .map((n) => {
-          // Prefer our own source document (title, URL, authority) over what the model copied.
-          const source = findSource({url: n.sourceUrl, title: n.sourceTitle})
-          const url = source?.url ?? (n.sourceUrl && /^https?:\/\//.test(n.sourceUrl) ? n.sourceUrl : undefined)
-          const title = source?.title ?? (n.sourceTitle && !/\.(md|pdf)\b/i.test(n.sourceTitle) ? n.sourceTitle : undefined)
-          return {
-            text: clip(n.text, 400),
-            kbPath: n.kbPath,
-            ...(title ? {sourceTitle: clip(title, 200)} : {}),
-            ...(url ? {sourceUrl: url} : {}),
-            ...(source?.authority ? {authority: source.authority} : {}),
+      onStepFinish: (step) => {
+        const failed = new Set(step.content.flatMap((part) => (part.type === 'tool-error' ? [part.toolCallId] : [])))
+        let evaluatedNow = false
+        for (const call of step.toolCalls) {
+          const item: TraceStep = {
+            toolName: call.toolName,
+            input: traceInput(call.toolName, call.input),
+            ...(failed.has(call.toolCallId) ? {error: true as const} : {}),
           }
-        }),
-    }
+          trace.push(item)
+          onEvent?.({type: 'step', step: item})
+          if (call.toolName === 'policy_knowledge_base_read' && !failed.has(call.toolCallId)) {
+            const paths = (call.input as {paths?: unknown})?.paths
+            if (Array.isArray(paths)) paths.forEach((p) => typeof p === 'string' && kbPathsRead.add(p))
+          }
+          if (call.toolName === 'evaluate_eligibility' && !failed.has(call.toolCallId)) evaluatedNow = true
+          if (call.toolName === 'submit_verdict') verdict = readVerdict(call.input) ?? verdict
+        }
+        // The verdict is decided by code at this point; send it before the explanation is written.
+        if (evaluatedNow && evaluated.size > 0) onEvent?.({type: 'verdicts', response: respond()})
+      },
+    })
   })
 
-  results.sort((a, b) =>
-    request.mode === 'explore'
-      ? VERDICT_ORDER.indexOf(a.verdict) - VERDICT_ORDER.indexOf(b.verdict) ||
-        `${a.institution.shortName} ${a.programme.title}`.localeCompare(`${b.institution.shortName} ${b.programme.title}`)
-      : b.session.localeCompare(a.session),
-  )
-
-  const fallbackReason =
-    request.mode === 'check'
-      ? "Clearance Desk has no published admission requirement for this course yet, so it can't check it. Ask the university or JAMB directly."
-      : 'No course in Clearance Desk’s data matched your UTME subjects.'
-
-  return {
-    mode: request.mode,
-    results,
-    noDataReason: results.length ? null : clip(verdict?.noDataReason?.trim() || fallbackReason, 600),
-    trace,
-    explained: verdict !== null,
-    model: modelId,
-  }
+  return respond()
 }
