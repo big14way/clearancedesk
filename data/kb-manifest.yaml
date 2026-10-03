@@ -1,0 +1,53 @@
+# Files for the "Clearance Desk — Admission Policy" Knowledge Base (Sanity Context, Phase 3).
+# Each entry points at a source in data/sources.yaml. scripts/build-kb-files.ts turns it into an upload file in
+# data/raw/kb/ (gitignored): HTML pages become clean Markdown with a source header (title, URL, publisher, authority,
+# dates) so Knowledge Base entries can cite the original; PDFs are copied as-is, or reduced to the relevant pages.
+#   mode: html       — main text of a saved web page
+#   mode: pdf        — the whole PDF
+#   mode: pdf-pages  — only `pages` (1-based PDF page numbers), extracted as text, two-column pages split by `columns`
+
+# ---------------------------------------------------------------- JAMB (national policy)
+- {source: src-jamb-home-2026-policy, mode: html}
+- {source: src-jamb-bulletin-2026-05-18, mode: pdf-pages, pages: [1, 2, 17], columns: 2}
+- {source: src-jamb-2024-utme-manual, mode: pdf-pages, pages: [8]}
+- {source: src-jamb-faq, mode: html}
+- {source: src-jamb-brochure-specific-entry, mode: pdf}
+
+# ---------------------------------------------------------------- University of Lagos
+- {source: src-unilag-2026-post-utme-notice, mode: html}
+- {source: src-unilag-2026-olevel-upload-extension, mode: html}
+- {source: src-unilag-2026-merit-cutoffs, mode: html}
+- {source: src-unilag-2025-admission-requirements, mode: pdf}
+
+# ---------------------------------------------------------------- University of Ibadan
+- {source: src-ui-2026-post-utme-advert, mode: html}
+- {source: src-ui-2026-regulation, mode: pdf}
+- {source: src-ui-2026-cutoff-marks, mode: pdf}
+
+# ---------------------------------------------------------------- Obafemi Awolowo University
+- {source: src-oau-2026-screening-notice, mode: html}
+- {source: src-oau-2026-putme-new-date, mode: html}
+- {source: src-oau-requirements-part1-2023, mode: pdf}
+- {source: src-oau-science-faculty-general-requirements, mode: html}
+- {source: src-oau-fss-general-requirements, mode: pdf}
+
+# ---------------------------------------------------------------- University of Nigeria, Nsukka
+- {source: src-unn-2026-screening-advert, mode: html}
+- {source: src-unn-2026-putme-suspended, mode: html}
+- {source: src-unn-2026-olevel-upload, mode: html}
+- {source: src-unn-academics-admission, mode: html}
+- {source: src-unn-2017-cutoff-disclaimer, mode: html}
+- {source: src-unn-masscom-dept-requirements, mode: html}
+
+# ---------------------------------------------------------------- Lagos State University
+- {source: src-lasu-2026-screening-announcement, mode: html}
+- {source: src-lasu-2026-screening-extension, mode: html}
+- {source: src-lasu-2026-screening-reopening, mode: html}
+
+# ---------------------------------------------------------------- Secondary (news/blogs) — only to surface conflicts
+- {source: src-blog-myunipress-unilag-cutoff, mode: html}
+- {source: src-blog-brands-ui-cutoff, mode: html}
+- {source: src-blog-allschool-unn-cutoff, mode: html}
+- {source: src-blog-teezab-oau-cutoff, mode: html}
+- {source: src-blog-abstech-lasu-cutoff, mode: html}
+- {source: src-blog-thewillnews-age-18, mode: html}

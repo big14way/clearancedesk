@@ -150,6 +150,7 @@
   publisher: News/Blog
   authority: secondary
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/myunipress-unilag-cutoff.html
   notes: Labels UNILAG's official 2025/2026 cut-offs as "2026/2027". Kept only to surface the conflict in the Knowledge Base.
 
 - id: src-blog-brands-ui-cutoff
@@ -158,6 +159,7 @@
   publisher: News/Blog
   authority: secondary
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/brands-ui-cutoff-2026.html
   notes: Claims a 200 general cut-off, NABTEB acceptance and "not more than two sittings for most programmes" — none of which UI's 2026 documents state.
 
 # ---------------------------------------------------------------- University of Nigeria, Nsukka
@@ -288,6 +290,7 @@
   publisher: News/Blog
   authority: secondary
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/allschool-unn-cutoff.html
   notes: Publishes "merit" cut-offs (e.g. Medicine 318) and an aggregate formula. UNN has published no departmental cut-offs and disowns unofficial lists.
 
 # ---------------------------------------------------------------- Obafemi Awolowo University
@@ -381,6 +384,7 @@
   publisher: News/Blog
   authority: secondary
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/teezab-oau-cutoff.html
   notes: Claims course-level "UTME" cut-offs (e.g. Medicine 285, Law 270) with no official basis; OAU's 2026 notice states only 200.
 
 - id: src-ui-matriculating-subjects
@@ -477,6 +481,7 @@
   authority: secondary
   publishedAt: 2024-07-18
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/thewillnews-age-18.html
   notes: Claims an 18+ minimum age. JAMB's 2026 homepage and bulletins say sixteen (16). Kept for the Knowledge Base conflict only.
 
 - id: src-blog-abstech-lasu-cutoff
@@ -486,6 +491,7 @@
   authority: secondary
   publishedAt: 2026-06-01
   retrievedAt: 2026-10-03
+  file: data/raw/secondary/abstech-lasu-cutoff.html
   notes: Calls LASU's 195 eligibility minimum "the JAMB cut-off mark". Kept for the Knowledge Base only.
 
 # ---------------------------------------------------------------- JAMB brochure by faculty (full remarks)

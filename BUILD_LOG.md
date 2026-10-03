@@ -92,3 +92,23 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - Unresolved programme refs = 0.
   - The spec's `{_id,session}` URL returns 34 rows.
 - **Final status:** 13 `verified` + 21 `conflicting`, all with `lastVerified: 2026-10-03`. The high conflict count is real: JAMB's 2019–2024 entries, its 2025 brochure PDFs and each university's own pages disagree often, which is exactly how candidates get caught out at clearance.
+
+## 2026-10-03 — Phase 3: Knowledge Base + Context endpoints
+
+- Read the current Sanity Context docs (`.md` versions) first: create KB, source types, resolve issues, configure MCP, MCP reference/tools.
+- **KB source files.** The source pages are full of navigation clutter, so `scripts/build-kb-files.ts` + `data/kb-manifest.yaml` turn 32 chosen sources into clean upload files in `data/raw/kb/`.
+  - HTML pages become Markdown with a header (title, URL, publisher, authority, dates), so every KB entry can cite the original.
+  - PDFs are uploaded as-is, except two that are reduced to their relevant pages: JAMB's 116-page officials' manual (only §1.2 matters: "Use of English is compulsory") and the 2026 policy bulletin.
+  - Sources: 26 official (JAMB + all five universities) + 6 blogs.
+- **Upload gotchas.**
+  - The Dashboard embeds Context in a cross-origin iframe (`context.sanity.io`), so the page's file input is unreachable from the parent.
+  - Opening `context.sanity.io` directly works after a GitHub login, but the Chrome extension has no screenshot or keyboard permission there. Clicks, DOM reading and JS do work.
+  - Tabs ignore plain `.click()`; they needed real pointer events. React inputs needed the native value setter + `input` events.
+  - A detour that didn't work: serving the files from a localhost server for the page to fetch is blocked by the page's CSP.
+  - What worked: the hidden `<input type=file multiple>` inside the standalone app. All 32 files uploaded and processed with 0 failures.
+- **Security slip.** While probing the iframe I printed its `src`, which carries a Sanity dashboard session token in the URL hash. It's now in this transcript, so it must be redacted before the session is shared, and the user should sign out of Sanity to invalidate it.
+- **Endpoints.**
+  - `clearance-rules`: source `cynv9mfk.production`, GROQ filter `_type in ["requirement","programme","institution","subject","source"]`, plus instructions (spec text + subject-id, choice-group and conflict semantics).
+  - `clearance-policy`: Knowledge Base only.
+  - **Gotcha:** `clearance-rules` showed "Not ready — No Studio application found for this project/dataset". A deployed *schema* isn't enough; Context's GROQ mode needs a **deployed Studio**. Ran `sanity deploy --url clearance-desk` → https://clearance-desk.sanity.studio, and saved `appId` in `sanity.cli.ts`. The status then read "Ready to connect · Studio: Clearance Desk (default) · Schema: 5 content types".
+- **Token gotcha.** `npm run list-tools` got `-32007 … requires an organization API token with Context access ('sanity.knowledge-base.read')`. The token in `.env.local` is a *project* token. The human must create an **organization** token with Context Viewer (Manage → Organization → API → Tokens).
