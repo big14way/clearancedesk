@@ -22,3 +22,7 @@ next-env.d.ts
 # Sanity Context agent skills (third-party; restore with `npx skills experimental_install` from skills-lock.json)
 .claude/skills/
 .claude/settings.local.json
+
+# Submission assets kept local: the demo video (upload to YouTube) and the redacted agent transcript (upload to dev.to)
+submission/demo/
+submission/agent-session/

@@ -271,3 +271,22 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
 - **Eval-script snag:** run 1's last three cases showed about 5 minutes each. That was the script counting rate-limit waits; it now times only the answered attempt.
 - **Not changed:** C13 and C14, as above. The explanations still sometimes echo the prompt ("I won't guess or use a similar course").
 
+
+## 2026-10-03 — Phase 9: submission draft
+
+- I fetched the official Path One template from the challenge page. It has no Limitations section, so I added one, as the spec suggests. The draft is `submission/POST.md`.
+  - Its images link to this repo on GitHub, so it can be pasted into dev.to as-is.
+  - Two TODOs are marked in it: the YouTube URL and the agent-session embed.
+- **Screenshots** (`submission/screenshots/post/`) were taken with puppeteer-core driving a throwaway headless Brave profile against a local `next start`, with real agent runs.
+  - The first attempt timed out waiting for "networkidle", because the page keeps a request open. It now waits for the form instead.
+  - The first trace shot grabbed the wrong `<details>` element. It's now chosen by its text.
+- **Demo video** (`submission/demo/`, not committed): 84 s, 1920×1080, following the spec's storyboard (❌ → why → fix → ✅ → explore → trace → architecture).
+  - Puppeteer's built-in recorder captures CSS pixels (390×844) even at 2× device scale, which would look soft on YouTube. So frames come straight from DevTools `Page.startScreencast` at 780×1688 and are placed on a 1920×1080 canvas with ffmpeg.
+  - The first assembly capped each frame at 1 s. The screencast only sends frames when the page repaints, so that cut every caption pause short. Real timestamps are used now.
+  - Captions were injected into the recorded page only; the app is unchanged.
+- **Agent transcript** (`submission/agent-session/`, not committed): a redacted copy of this session's JSONL.
+  - The original contained two real secrets: the old org token, from the Phase 3 `.env.example` diff (since deleted by the human), and the Sanity dashboard session token from Phase 3.
+  - It also contained the shared Claude account's email and 304 embedded screenshots.
+  - The redacted copy drops every image and masks token-shaped strings, `…TOKEN=` values and the email. A re-scan finds 0 matches.
+  - A final in-memory check confirmed that none of the current secret values from either `.env.local` appear in it.
+- **Fact-check of the draft against the KB screenshots:** I had written that a KB entry "softened" OAU's English requirement. The screenshots show the opposite: I kept the entry's stricter reading (a credit) over an OAU page's "a pass at O-Level" wording. Corrected in the draft.
