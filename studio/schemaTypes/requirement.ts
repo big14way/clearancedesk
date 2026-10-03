@@ -103,6 +103,19 @@ export const requirement = defineType({
       validation: (rule) => rule.required().integer().min(1).max(9),
     }),
     defineField({
+      name: 'olevelMinCreditsCombined',
+      title: "Minimum credits when combining sittings",
+      type: 'number',
+      group: 'olevel',
+      description:
+        'Only if the source asks for more credits when results from two sittings are combined, e.g. UI: "five at one sitting or six at two sittings". Leave empty otherwise.',
+      validation: (rule) =>
+        rule.integer().min(1).max(9).custom((value, context) => {
+          const min = (context.document?.olevelMinCredits as number | undefined) ?? 5
+          return value === undefined || value >= min || `Must be at least the minimum credits (${min})`
+        }),
+    }),
+    defineField({
       name: 'olevelCompulsory',
       title: "O'level compulsory subjects",
       type: 'array',
@@ -168,7 +181,7 @@ export const requirement = defineType({
       title: 'Verification status',
       type: 'string',
       group: 'trust',
-      description: 'Verified = checked by a human against the source. Conflicting = official sources disagree; the stricter rule is encoded.',
+      description: 'Verified = every field checked against the cited sources and matching exactly. Conflicting = official sources disagree; the stricter rule is encoded.',
       options: {list: verificationOptions, layout: 'radio', direction: 'horizontal'},
       initialValue: 'unverified',
       validation: (rule) => rule.required(),
@@ -187,7 +200,7 @@ export const requirement = defineType({
       title: 'Last verified',
       type: 'date',
       group: 'trust',
-      description: 'When a human last checked these rules against the sources.',
+      description: 'When these rules were last checked field-by-field against the sources.',
     }),
   ],
   validation: (rule) =>

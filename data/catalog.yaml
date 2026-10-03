@@ -1,0 +1,1161 @@
+# Clearance Desk catalog. Every requirement is drafted ONLY from the sources in data/sources.yaml.
+# Conventions:
+#   - Grades default to C6 (credit). Session 2026/2027 = applicants sitting UTME 2026.
+#   - When two official sources disagree, verificationStatus is `conflicting`, conflictNote names both,
+#     and the STRICTER rule is encoded (safe for candidates).
+#   - Things code cannot check (age, post-UTME, "at most one of X/Y", aggregate cut-offs) go in specialConditions.
+#   - "Use of English" (UTME) and "English Language" (O'level) are the same subject id: english. Use of English is
+#     compulsory for every UTME candidate (src-jamb-2024-utme-manual), so it is a UTME subject even where a JAMB entry
+#     lists only the other three.
+
+subjects:
+  # UTME subjects (JAMB IBASS e-syllabus list) plus O'level-only subjects that appear in the requirements.
+  - {id: english, name: "English Language / Use of English", aliases: ["English", "English Language", "Use of English"]}
+  - {id: mathematics, name: "Mathematics", aliases: ["Maths", "General Mathematics"]}
+  - {id: further-mathematics, name: "Further Mathematics", aliases: ["Further Maths", "Additional Mathematics", "Additional/Further Mathematics"]}
+  - {id: physics, name: "Physics", aliases: []}
+  - {id: chemistry, name: "Chemistry", aliases: []}
+  - {id: biology, name: "Biology", aliases: []}
+  - {id: agricultural-science, name: "Agricultural Science", aliases: ["Agric", "Agric Science", "Agriculture"]}
+  - {id: economics, name: "Economics", aliases: []}
+  - {id: commerce, name: "Commerce", aliases: []}
+  - {id: financial-accounting, name: "Financial Accounting / Principles of Accounts", aliases: ["Principles of Accounts", "Principles of Accounting", "Principle of Accounts", "Financial Accounting"]}
+  - {id: government, name: "Government", aliases: []}
+  - {id: history, name: "History", aliases: []}
+  - {id: geography, name: "Geography", aliases: []}
+  - {id: literature-in-english, name: "Literature in English", aliases: ["Literature", "Lit-in-English", "English Literature"]}
+  - {id: crs, name: "Christian Religious Studies", aliases: ["CRS", "CRK", "Christian Religious Knowledge"]}
+  - {id: irs, name: "Islamic Studies", aliases: ["IRS", "IRK", "Islamic Religious Studies", "Islamic Religious Knowledge"]}
+  - {id: french, name: "French", aliases: []}
+  - {id: arabic, name: "Arabic", aliases: ["Arabic Studies"]}
+  - {id: hausa, name: "Hausa", aliases: []}
+  - {id: igbo, name: "Igbo", aliases: []}
+  - {id: yoruba, name: "Yoruba", aliases: []}
+  - {id: fine-arts, name: "Fine Arts", aliases: ["Fine Art", "Visual Arts", "Art", "Fine and Applied Arts"]}
+  - {id: music, name: "Music", aliases: []}
+  - {id: home-economics, name: "Home Economics", aliases: []}
+  - {id: computer-studies, name: "Computer Studies", aliases: ["Computer Science", "Computer"]}
+  - {id: physical-health-education, name: "Physical and Health Education", aliases: ["PHE", "Physical Education"]}
+  # O'level-only
+  - {id: civic-education, name: "Civic Education", aliases: ["Civics"]}
+  - {id: data-processing, name: "Data Processing", aliases: []}
+  - {id: ict, name: "Information and Communication Technology", aliases: ["ICT"]}
+  - {id: business-management, name: "Business Management", aliases: []}
+  - {id: technical-drawing, name: "Technical Drawing", aliases: ["TD"]}
+  - {id: metalwork, name: "Metal Work", aliases: ["Metalwork"]}
+  - {id: woodwork, name: "Wood Work", aliases: ["Woodwork"]}
+  - {id: health-science, name: "Health Science", aliases: ["Health Education"]}
+  - {id: food-and-nutrition, name: "Food and Nutrition", aliases: ["Food & Nutrition", "Foods and Nutrition"]}
+
+institutions:
+  # name/ownership/state: JAMB IBASS institution record (data/raw/jamb-ibass/*.json → institution)
+  - {id: unilag, name: "University of Lagos", shortName: UNILAG, ownership: federal, state: Lagos, website: "https://unilag.edu.ng"}
+  - {id: ui, name: "University of Ibadan", shortName: UI, ownership: federal, state: Oyo, website: "https://ui.edu.ng"}
+  - {id: oau, name: "Obafemi Awolowo University", shortName: OAU, ownership: federal, state: Osun, website: "https://oauife.edu.ng"}
+  - {id: lasu, name: "Lagos State University", shortName: LASU, ownership: state, state: Lagos, website: "https://lasu.edu.ng"}
+  - {id: unn, name: "University of Nigeria, Nsukka", shortName: UNN, ownership: federal, state: Enugu, website: "https://www.unn.edu.ng"}
+
+programmes:
+  - {id: unilag-accounting, institution: unilag, title: "Accounting"}
+  - {id: unilag-law, institution: unilag, title: "Law"}
+  - {id: unilag-economics, institution: unilag, title: "Economics"}
+  - {id: unilag-nursing-science, institution: unilag, title: "Nursing Science"}
+  - {id: unilag-medicine-and-surgery, institution: unilag, title: "Medicine and Surgery"}
+  - {id: unilag-mass-communication, institution: unilag, title: "Mass Communication"}
+  - {id: unilag-computer-science, institution: unilag, title: "Computer Science"}
+  - {id: unilag-electrical-electronics-engineering, institution: unilag, title: "Electrical/Electronics Engineering"}
+  - {id: ui-law, institution: ui, title: "Law"}
+  - {id: ui-economics, institution: ui, title: "Economics"}
+  - {id: ui-nursing-science, institution: ui, title: "Nursing Science"}
+  - {id: ui-medicine-and-surgery, institution: ui, title: "Medicine and Surgery"}
+  - {id: ui-computer-science, institution: ui, title: "Computer Science"}
+  - {id: ui-electrical-electronics-engineering, institution: ui, title: "Electrical and Electronics Engineering"}
+  - {id: ui-accounting, institution: ui, title: "Accounting"}
+  - {id: oau-medicine-and-surgery, institution: oau, title: "Medicine and Surgery"}
+  - {id: oau-nursing-science, institution: oau, title: "Nursing Science"}
+  - {id: oau-electronic-electrical-engineering, institution: oau, title: "Electronic and Electrical Engineering"}
+  - {id: oau-computer-science-with-mathematics, institution: oau, title: "Computer Science with Mathematics"}
+  - {id: oau-economics, institution: oau, title: "Economics"}
+  - {id: oau-management-and-accounting, institution: oau, title: "Management and Accounting"}
+  - {id: lasu-medicine-and-surgery, institution: lasu, title: "Medicine and Surgery"}
+  - {id: lasu-nursing-science, institution: lasu, title: "Nursing Science"}
+  - {id: lasu-computer-science, institution: lasu, title: "Computer Science"}
+  - {id: lasu-electronics-computer-engineering, institution: lasu, title: "Electronics and Computer Engineering"}
+  - {id: lasu-economics, institution: lasu, title: "Economics"}
+  - {id: unn-medicine-and-surgery, institution: unn, title: "Medicine and Surgery"}
+  - {id: unn-nursing-science, institution: unn, title: "Nursing Science"}
+  - {id: unn-computer-science, institution: unn, title: "Computer Science"}
+  - {id: unn-electrical-engineering, institution: unn, title: "Electrical Engineering"}
+  - {id: unn-economics, institution: unn, title: "Economics"}
+  - {id: unn-accountancy, institution: unn, title: "Accountancy"}
+  - {id: unn-law, institution: unn, title: "Law"}
+  - {id: unn-mass-communication, institution: unn, title: "Mass Communication"}
+
+# ------------------------------------------------------------------------------------------------
+# Shared rule text (YAML anchors keep each institution's common conditions identical)
+# ------------------------------------------------------------------------------------------------
+x-unilag-conditions: &unilag-conditions
+  - "UNILAG must be your first choice in the 2026/2027 UTME."
+  - "You must sit UNILAG's Post-UTME online aptitude test; candidates who miss it are not considered."
+  - "You must be at least 16 years old by 30 September 2026."
+  - "O'level results had to be uploaded on JAMB CAPS and the UNILAG portal by 24 August 2026."
+  - "UNILAG also accepts Cambridge O'Level results, which this checker cannot model; confirm with UNILAG if you are using one."
+x-unn-conditions: &unn-conditions
+  - "UNN must be your first choice in the 2026 UTME."
+  - "You must take UNN's Post-UTME screening. UNN suspended the 2026 online test on 21 August 2026 for technical reasons; check unn.edu.ng for the new date."
+  - "You must be at least 16 years old by 30 September 2026."
+  - "UNN publishes no departmental cut-off marks, and in 2017 it publicly disowned unofficial cut-off lists."
+x-unn-science-note: &unn-science-note "UNN's approved Science list also includes subjects this checker does not list separately (e.g. Statistics, General Science, Integrated Science, Human Biology, Physics with Chemistry). If your science credit is one of those, confirm with UNN."
+x-oau-conditions: &oau-conditions
+  - "OAU must be your first choice in the 2026 UTME."
+  - "You must attend OAU's Post-UTME screening in person (rescheduled to 25–30 September 2026)."
+  - "OAU's 2026 notices publish no departmental cut-off marks, and its detailed 2026 eligibility guidelines page (eportal2.oauife.edu.ng) could not be read. Check both with OAU."
+x-lasu-conditions: &lasu-conditions
+  - "LASU must be your first choice in the 2026 UTME."
+  - "You must be at least 16 years old by 1 October 2026."
+  - "You must complete LASU's mandatory online admission screening (it closed on 14 July 2026 and reopened 6–9 August only for candidates whose awaited results had been released) and upload your O'level results on JAMB CAPS."
+  - "LASU ranks candidates by points (UTME score plus your five best relevant O'level grades) and publishes no departmental cut-offs."
+  - "O'level results from exams taken after July 2026 are not accepted."
+  - "LASU names only 'SSCE (or equivalent)' results; it does not say whether GCE or NABTEB count, so confirm with LASU if yours is one of those."
+x-ui-conditions: &ui-conditions
+  - "You must sit UI's Post-UTME examination (held 27–29 July 2026)."
+  - "UI's 2026 documents name only WAEC and NECO results. They say nothing about GCE or NABTEB for UTME candidates, so confirm with UI if your result is GCE or NABTEB."
+  - "You must be at least 16 years old by 30 September 2026."
+
+requirements:
+  # ============================================================== UNIVERSITY OF LAGOS
+  # Institution-wide: UTME ≥ 200; five credits at ONE sitting incl. English & Mathematics; results named: WAEC, NECO, GCE.
+  - id: unilag-medicine-and-surgery-2026-2027
+    programme: unilag-medicine-and-surgery
+    session: "2026/2027"
+    utmeCompulsory: [english, biology, chemistry, physics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: biology}, {subject: chemistry}, {subject: physics}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Medicine & Surgery was 83.425. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "MEDICINE AND SURGERY (IBASS programme 14982): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 7, MEDICINE & SURGERY row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting incl. English and Mathematics; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1 (WAEC, NECO, GCE and Cambridge O'Level results)"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, MEDICINE & SURGERY, MERIT column"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unilag-nursing-science-2026-2027
+    programme: unilag-nursing-science
+    session: "2026/2027"
+    utmeCompulsory: [english, biology, chemistry, physics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: biology}, {subject: chemistry}, {subject: physics}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Nursing Sciences was 77.925. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "NURSING SCIENCE (IBASS programme 14980, status Approved): UTME subjects; UTME (O'level) requirements. Entry updated 2023-10-19"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 7, NURSING row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, NURSING SCIENCES, MERIT column"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unilag-computer-science-2026-2027
+    programme: unilag-computer-science
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, physics]
+    utmeChoices: [{pick: 1, from: [chemistry, biology]}]
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: further-mathematics}, {subject: physics}]
+    olevelChoices: [{pick: 1, from: [chemistry, biology], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Computer Science was 82.05. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "COMPUTER SCIENCE (IBASS programme 15030): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 23, COMPUTER SCIENCE row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, COMPUTER SCIENCE, MERIT column"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unilag-electrical-electronics-engineering-2026-2027
+    programme: unilag-electrical-electronics-engineering
+    session: "2026/2027"
+    utmeCompulsory: [english, chemistry, mathematics, physics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: further-mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Electrical Engineering was 79.025. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "ELECTRICAL/ELECTRONICS ENGINEERING (IBASS programme 15050): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 16, ELECTRICAL/ ELECTRONICS ENGINEERING row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, ELECTRICAL ENGINEERING, MERIT column"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unilag-law-2026-2027
+    programme: unilag-law
+    session: "2026/2027"
+    utmeCompulsory: [english]
+    # UNILAG approved Arts + Social Science subjects (JAMB §2.2.03 III), minus Fine Arts (UNILAG does not accept it for Law); Language Arts is not a UTME subject
+    utmeChoices: [{pick: 3, from: [literature-in-english, arabic, history, crs, irs, igbo, hausa, yoruba, french, economics, government, geography, commerce]}]
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: literature-in-english}]
+    olevelChoices: [{pick: 2, from: [arabic, history, crs, irs, igbo, hausa, yoruba, french, fine-arts, economics, government, geography, commerce], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UTME: UNILAG accepts Economics or Commerce, but not both."
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Law was 79.125. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "LAW (IBASS programme 14969): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 18, LAW row"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i) and III (a) Approved Arts, (c) Approved Social Science subjects, PDF pp. 3–4"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, LAW, MERIT column"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's brochure (IBASS 14969, updated 2023) says UNILAG accepts Principles of Accounting in UTME and allows
+      "Principles of Accounting and any one Arts/Social Science subject" at O'level, and limits UTME to ONE of
+      Economics, Commerce or Accounting. UNILAG's own 2025/2026 requirements (p. 18) say UNILAG does NOT accept
+      Principles of Accounting and accepts Economics or Commerce but not both. We encode the stricter rule:
+      Principles of Accounts is not counted for UTME or O'level.
+
+  - id: unilag-economics-2026-2027
+    programme: unilag-economics
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, economics]
+    utmeChoices: [{pick: 1, from: [biology, financial-accounting, geography, government]}]
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    olevelChoices: [{pick: 2, from: [biology, financial-accounting, geography, government], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Economics was 73.625. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "ECONOMICS (IBASS programme 14978): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 25, ECONOMICS row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, ECONOMICS, MERIT column"}
+      - {source: src-jamb-brochure-social, locator: "Economics section: O'level remark (iv), PDF p. 42; UTME SUBJECTS (xv), PDF p. 48 (both match IBASS 14978)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's brochure (IBASS 14978) limits the 4th UTME subject and the two extra O'level credits to Biology,
+      Financial Accounting, Geography or Government. UNILAG's own 2025/2026 requirements (p. 25) say "any other
+      subjects" (UTME) and "any other two subjects" (O'level). We encode JAMB's stricter list.
+
+  - id: unilag-accounting-2026-2027
+    programme: unilag-accounting
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, economics]
+    utmeChoices: [{pick: 1, from: [financial-accounting, geography, government, biology]}]
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    olevelChoices: [{pick: 2, from: [geography, further-mathematics, financial-accounting, government, business-management, data-processing, computer-studies, biology], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "O'level: Data Processing and Computer Studies count as one option between them."
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Accounting was 73. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "ACCOUNTANCY/ACCOUNTING (IBASS programme 14964): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 19, ACCOUNTING row"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i), PDF p. 3"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, ACCOUNTING, MERIT column"}
+      - {source: src-jamb-brochure-administration, locator: "Accounting section: O'level remark (vii), PDF pp. 7–8; UTME SUBJECTS (vii), PDF p. 9"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UNILAG's own 2025/2026 requirements (p. 19), and JAMB's brochure remarks for Accounting (PDF p. 9, UTME SUBJECTS vii;
+      PDF p. 7, O'level vii), also accept Further Mathematics and Literature-in-English as the 4th UTME subject and
+      Literature-in-English as an O'level option; JAMB's UNILAG entry (IBASS 14964) does not. Further Mathematics is not a
+      UTME subject. We encode the stricter IBASS lists.
+
+  - id: unilag-mass-communication-2026-2027
+    programme: unilag-mass-communication
+    session: "2026/2027"
+    utmeCompulsory: [english, literature-in-english]
+    # UNILAG approved Arts + Social Science subjects (JAMB §2.2.03 III)
+    utmeChoices: [{pick: 2, from: [arabic, history, crs, irs, igbo, hausa, yoruba, french, fine-arts, economics, government, geography, commerce]}]
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: literature-in-english}]
+    olevelChoices: [{pick: 2, from: [economics, history, government, geography, hausa, igbo, yoruba, crs, irs], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNILAG's published 2026/2027 'UTME merit cut-off mark' for Mass Communication was 74.6. The page does not say what scale this is on (it is not a UTME score out of 400)."
+      - *unilag-conditions
+    citations:
+      - {source: src-jamb-ibass-unilag, locator: "MASS COMMUNICATION (IBASS programme 15027): UTME subjects; UTME (O'level) requirements. Entry updated 2023-07-25"}
+      - {source: src-unilag-2025-admission-requirements, locator: "p. 26, MASS COMMUNICATION row"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.03 University of Lagos (i) and III (a) Approved Arts, (c) Approved Social Science subjects, PDF pp. 3–4"}
+      - {source: src-unilag-2026-post-utme-notice, locator: "ELIGIBLE CANDIDATES, paras. 1–4 (UTME 200 and above; five credits at one sitting; age; compulsory Post-UTME test)"}
+      - {source: src-unilag-2026-olevel-upload-extension, locator: "para. 1"}
+      - {source: src-unilag-2026-merit-cutoffs, locator: "2026/2027 merit cut-off table, MASS COMMUNICATION, MERIT column"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's brochure (IBASS 15027) adds "Mathematics is accepted" for UTME and lists Civic Education as an O'level
+      option. UNILAG's own 2025/2026 requirements (p. 26) mention neither. We encode the stricter rule: Mathematics
+      does not count as a UTME choice and Civic Education does not count at O'level.
+
+  # ============================================================== UNIVERSITY OF IBADAN
+  # Institution-wide: no published UTME minimum for 2026/2027; Medicine/Nursing one sitting; others "5 credits at one
+  # sitting or 6 at two sittings". Exams named: WAEC, NECO (UI advert) and GCE (JAMB UI entry).
+  - id: ui-medicine-and-surgery-2026-2027
+    programme: ui-medicine-and-surgery
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Medicine and Surgery was 80.00. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 14, College of Medicine — Medicine & Surgery row (UTME subjects; O'level; remark: five credits at one sitting)"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (College of Medicine and Faculty of Pharmacy: five credits at one sitting)"}
+      - {source: src-jamb-ibass-ui, locator: "MEDICINE & SURGERY (IBASS programme 11807). Entry updated 2023-04-20"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 1, Medicine and Surgery, Merit column"}
+      - {source: src-jamb-brochure-medical, locator: "Medicine and Surgery section, UTME remark (i), PDF p. 42 (\"BENIN, IBADAN, … require the 'O' Level credit passes at one (1) sitting\")"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: ui-nursing-science-2026-2027
+    programme: ui-nursing-science
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: biology}, {subject: physics}, {subject: chemistry}, {subject: mathematics}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Nursing Science was 74.5. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 14, College of Medicine — Nursing row (\"Two O/L sittings are not accepted.\")"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (College of Medicine: five credits at one sitting)"}
+      - {source: src-jamb-ibass-ui, locator: "NURSING/NURSING SCIENCE (IBASS programme 11805). Entry updated 2023-04-20"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 1, Nursing Science, Merit column"}
+      - {source: src-jamb-brochure-medical, locator: "Nursing/Nursing Science section (PDF pp. 21–27), UTME remarks (ii)–(iii), PDF p. 27"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's brochure (Nursing remarks, PDF p. 27) says "IBADAN - No admission through UTME" and, in the next clause,
+      five or six credits "at one (1) or two (2) sittings" in English, Biology/Health Science, Chemistry, Mathematics and
+      one of Economics, Government, Literature, History, Geography or Physics. UI's own 2026/2027 regulation (p. 14) and
+      cut-off list (Nursing Science 74.5) show UTME admission with Physics required and "Two O/L sittings are not
+      accepted". We encode UI's current, stricter rule.
+
+  - id: ui-computer-science-2026-2027
+    programme: ui-computer-science
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, chemistry, physics]
+    utmeChoices: []
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelMinCreditsCombined: 6
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: chemistry}, {subject: physics}]
+    # "one other Science subject (excluding Agricultural Science)" — UI approved Science subjects (JAMB §2.2.02 (d))
+    olevelChoices: [{pick: 1, from: [biology, further-mathematics, geography], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Computer Science was 74.125. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 5, Computing — Computer Science row"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (two O level results: at least six credits)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.02 University of Ibadan (d) Approved Science Subjects, PDF p. 3"}
+      - {source: src-jamb-ibass-ui, locator: "COMPUTER SCIENCE (IBASS programme 11862). Entry updated 2023-12-23"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 1, Computer Science, Merit column"}
+      - {source: src-jamb-brochure-sciences, locator: "Computer Science section, O'level remark (vi), PDF p. 200; UTME SUBJECTS (iv), PDF p. 209"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: ui-electrical-electronics-engineering-2026-2027
+    programme: ui-electrical-electronics-engineering
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, mathematics]
+    utmeChoices: []
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelMinCreditsCombined: 6
+    olevelCompulsory: [{subject: english}, {subject: physics}, {subject: chemistry}, {subject: mathematics}]
+    olevelChoices: [{pick: 1, from: [biology, agricultural-science, further-mathematics, technical-drawing, economics, geography, metalwork, woodwork], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Electrical and Electronics Engineering was 71.25. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 20, Technology — Electrical & Electronics Engineering row (\"As in Agric & Env. Engineering\") and the Agricultural & Environmental Engineering row above it"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (two O level results: at least six credits)"}
+      - {source: src-jamb-ibass-ui, locator: "ELECTRICAL /ELECTRONICS ENGINEERING (IBASS programme 11879). Entry updated 2023-04-20"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 3, Electrical and Electronics Engineering, Merit column"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: ui-economics-2026-2027
+    programme: ui-economics
+    session: "2026/2027"
+    utmeCompulsory: [english, economics, mathematics]
+    utmeChoices: [{pick: 1, from: [government, history, geography, literature-in-english, crs, irs]}]
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelMinCreditsCombined: 6
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    # Arts or Social Science subjects only (stricter; see conflictNote) — UI approved lists (JAMB §2.2.02 (c)(e))
+    olevelChoices: [{pick: 2, from: [literature-in-english, arabic, french, hausa, history, igbo, irs, crs, yoruba, government, geography], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Economics was 54.25. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 6, Economics and Management Sciences — Economics row"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (two O level results: at least six credits)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.02 University of Ibadan (c) Arts, (d) Science, (e) Social Science approved subjects, PDF pp. 2–3"}
+      - {source: src-jamb-ibass-ui, locator: "ECONOMICS (IBASS programme 11802). Entry updated 2023-04-20"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 1, Economics, Merit column"}
+      - {source: src-jamb-brochure-social, locator: "Economics section: O'level remark (vi), PDF p. 42 (\"IBADAN requires five (5) 'O' Level credit passes to include Mathematics, Economics and any two (2) Arts or Social Sciences subjects\"); UTME SUBJECTS (iv), PDF p. 47 (\"IBADAN - Mathematics and any other two (2) subjects\")"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      O'level: UI's 2026/2027 regulation (p. 6) accepts "any two / three of Arts, Social Sciences or Science subjects";
+      JAMB's brochure (PDF p. 42) says any two Arts or Social Sciences subjects. UTME: the brochure (PDF p. 47) says
+      "Mathematics and any other two (2) subjects"; UI's regulation names Government, History, Geography, Literature or
+      CRK/IRK. We encode the stricter rule in both: Arts/Social Science O'level credits and UI's named UTME list.
+
+  - id: ui-accounting-2026-2027
+    programme: ui-accounting
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics]
+    utmeChoices: [{pick: 2, from: [economics, financial-accounting, commerce, government, geography]}]
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelMinCreditsCombined: 6
+    olevelCompulsory: [{subject: english}, {subject: mathematics}]
+    olevelChoices:
+      - {pick: 1, from: [economics, financial-accounting], minGrade: C6}
+      - {pick: 2, from: [economics, financial-accounting, commerce, government, geography], minGrade: C6}
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "O'level: UI asks for two or three more credits from 'Social or Management Sciences subjects'. Its approved Social Science subjects are Economics, Government and Geography; it does not define 'Management Sciences'. We count Economics, Financial Accounting, Commerce, Government and Geography, the subjects UI lists for Accounting's UTME."
+      - "UI's published 2026/2027 merit cut-off for Accounting was 69.5. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 7, Economics and Management Sciences — Accounting row"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (two O level results: at least six credits)"}
+      - {source: src-jamb-ibass-ui, locator: "ACCOUNTING (IBASS programme 29341): O'level lists \"SSE, GCE or NECO\". Entry updated 2023-12-23"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.02 University of Ibadan (e) Approved Social Science subjects, PDF p. 3"}
+      - {source: src-ui-matriculating-subjects, locator: "List of matriculating subjects (Economics, Commerce, Government, Principle of Accounts, Geography)"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 1, Accounting, Merit column"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's entry (IBASS 29341, 2023) asks for "any two Social or Management science subjects" at UTME and
+      "Economics/Financial Accounting and any 2 or 3 subjects" at O'level, with no subject limit. UI's own 2026/2027
+      regulation (p. 7) gives an explicit UTME list (Economics, Financial Accounting, Commerce, Government, Geography)
+      and limits the extra O'level credits to Social or Management Sciences. We encode UI's stricter rule.
+
+  - id: ui-law-2026-2027
+    programme: ui-law
+    session: "2026/2027"
+    utmeCompulsory: [english]
+    # "any three subjects from Arts, Social Science and/or Science" — UI approved lists (JAMB §2.2.02 (c)(d)(e))
+    utmeChoices: [{pick: 3, from: [literature-in-english, arabic, french, hausa, history, igbo, irs, crs, yoruba, economics, government, geography, mathematics, further-mathematics, agricultural-science, biology, chemistry, physics]}]
+    utmeMinScore: null
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelMinCreditsCombined: 6
+    olevelCompulsory: [{subject: english}, {subject: literature-in-english}, {subject: mathematics}]
+    olevelChoices: [{pick: 2, from: [arabic, french, hausa, history, igbo, irs, crs, yoruba, economics, government, geography, agricultural-science, further-mathematics, biology, chemistry, physics], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "UI's published 2026/2027 merit cut-off for Law was 71.00. UI does not say what scale this is on."
+      - *ui-conditions
+    citations:
+      - {source: src-ui-2026-regulation, locator: "p. 13, Law — Law row (incl. remark: credit in Literature in English)"}
+      - {source: src-ui-2026-post-utme-advert, locator: "§2 Date of Post-UTME Examination; §3 General Information (two O level results: at least six credits)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.02 University of Ibadan (a) and approved subject lists (c)(d)(e), PDF pp. 1–3"}
+      - {source: src-jamb-ibass-ui, locator: "LAW (IBASS programme 11794). Entry updated 2023-04-20"}
+      - {source: src-ui-2026-cutoff-marks, locator: "p. 2, Law, Merit column"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's brochure §2.2.02(a) says UI requires English Language AND Mathematics credits for all programmes
+      "except otherwise stated". UI's 2026/2027 regulation (p. 13) and JAMB's own Law entry for UI (IBASS 11794, O'level
+      field and remark "IBADAN requires five (5) 'O' Level credit passes … to include English Language, Literature in
+      English, any other subjects…") list English and Literature but not Mathematics. We encode the stricter rule: a
+      Mathematics credit is required.
+
+  # ============================================================== UNIVERSITY OF NIGERIA, NSUKKA
+  # Institution-wide: UTME ≥ 160; five credits incl. English Language and a Science subject in not more than two sittings;
+  # results named: WAEC/WASC, NECO, GCE (NABTEB not mentioned). JAMB entries list three UTME subjects; Use of English is the 4th.
+  # UNN approved subject lists: JAMB §2.2.05 (b) Science, Arts, Social Science.
+  - id: unn-medicine-and-surgery-2026-2027
+    programme: unn-medicine-and-surgery
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNN accepts 'Physics with Chemistry' (one O'level subject) in place of separate Physics and Chemistry credits."
+      - *unn-conditions
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "MEDICINE & SURGERY (IBASS programme 22046): UTME subjects; UTME (O'level) requirements; Remarks \"UNN accepts Physics with Chemistry … UNN requirements should be at one (1) sitting\". Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-calendar-2016-2018, locator: "PDF p. 667, MB,BS Admission Requirement (credits in English, Physics, Chemistry, Biology and Mathematics in one sitting)"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1 (first choice, UTME 160 and above); eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (a), PDF p. 5"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unn-nursing-science-2026-2027
+    programme: unn-nursing-science
+    session: "2026/2027"
+    utmeCompulsory: [english, chemistry, biology, physics]
+    utmeChoices: []
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: biology}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*unn-conditions]
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "NURSING/NURSING SCIENCE (IBASS programme 22044): UTME subjects; UTME (O'level) requirements. Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-nursing-dept-requirements, locator: "Admission requirement, UTME paragraph (\"not more than two sittings … must have passed the University Post UTME screening\")"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (a), PDF p. 5"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unn-computer-science-2026-2027
+    programme: unn-computer-science
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, physics]
+    utmeChoices: [{pick: 1, from: [biology, chemistry, economics, geography]}]
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}]
+    olevelChoices: [{pick: 2, from: [chemistry, biology], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*unn-conditions]
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "COMPUTER SCIENCE (IBASS programme 22101): UTME subjects; UTME (O'level) requirements. Entry updated 2021-11-17"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-physicalscs-faculty-requirements, locator: "Admission requirement table, COMPUTER SCIENCE row (incl. \"UME subjects: UNN does not accept Agric science\")"}
+      - {source: src-unn-computer-science-dept-requirements, locator: "Admission requirement, UTME paragraph (any two from Chemistry, Biology, Further Mathematics and Statistics; at most two sittings)"}
+      - {source: src-jamb-brochure-sciences, locator: "Computer Science section: O'level remark (xvi), PDF p. 201; UTME SUBJECTS (iii), PDF p. 209 (\"UNN does not accept Agricultural Science\")"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      Three official versions disagree on the two extra O'level credits. JAMB (IBASS 22101, 2021) allows any two of
+      Chemistry, Biology, Agricultural Science, Economics, Further Mathematics, Computer Science, Data Processing and ICT.
+      UNN's Computer Science department page allows Chemistry, Biology, Further Mathematics and Statistics. UNN's Faculty
+      of Physical Sciences table allows Chemistry, Biology, Agricultural Science and Economics. Only Chemistry and Biology
+      are accepted by all three, so we require both. JAMB also lists Agricultural Science as a UTME option; the faculty
+      table says "UNN does not accept Agric science", so it is excluded. JAMB's brochure remarks give a fourth version
+      (PDF p. 201, O'level xvi: any two from Chemistry, Biology/Agricultural Science and Economics); the intersection is
+      still Chemistry and Biology.
+
+  - id: unn-electrical-engineering-2026-2027
+    programme: unn-electrical-engineering
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, physics, chemistry]
+    utmeChoices: []
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*unn-conditions]
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "ELECTRICAL ENGINEERING (IBASS programme 22122): UTME subjects; UTME (O'level) requirements. Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-electrical-dept-requirements, locator: "Admission requirement, UTME paragraph (English, Chemistry, Physics and Mathematics in not more than two sittings; WASC/SSCE/GCE/NECO may be combined)"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+      - {source: src-unn-academics-admission, locator: "General entry requirement: five credits incl. English Language and a Science subject, not more than two sittings"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: unn-economics-2026-2027
+    programme: unn-economics
+    session: "2026/2027"
+    utmeCompulsory: [english, economics, mathematics]
+    utmeChoices: [{pick: 1, from: [government, history, geography, literature-in-english, french, crs]}]
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    # "any two (2) of Arts or Social Science subjects" — UNN approved Arts + Social Science lists
+    olevelChoices: [{pick: 2, from: [literature-in-english, history, fine-arts, french, igbo, hausa, yoruba, music, crs, irs, commerce, government, geography, financial-accounting], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*unn-conditions]
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "ECONOMICS (IBASS programme 22040): UTME subjects; UTME (O'level) requirements. Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-socialscs-faculty-requirements, locator: "Admission requirement table, ECONOMICS row"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (b) acceptable Arts and Social Science subjects, PDF pp. 5–6"}
+      - {source: src-jamb-brochure-social, locator: "Economics section, O'level remark (xxv), PDF p. 44"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UTME: JAMB (IBASS 22040) accepts Christian Religious Studies or Islamic Studies as the 4th subject; UNN's Social
+      Sciences faculty table lists only "C R K", so Islamic Studies is excluded. O'level: JAMB's entry requires two more
+      Arts or Social Science credits; UNN's table and JAMB's brochure remarks (PDF p. 44, xxv: "two (2) other relevant
+      subjects") are looser. We encode the stricter rule.
+
+  - id: unn-accountancy-2026-2027
+    programme: unn-accountancy
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, economics]
+    # "plus any Social Science subject" — UNN approved Social Science list minus Economics
+    utmeChoices: [{pick: 1, from: [commerce, government, geography, financial-accounting]}]
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    olevelChoices: [{pick: 1, from: [financial-accounting, commerce, government], minGrade: C6}]
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "UNN's Accountancy department lists 'Book keeping & Accounts'. We treat Financial Accounting / Principles of Accounts as that subject; confirm with UNN if your result names it differently."
+      - *unn-conditions
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "ACCOUNTING (IBASS programme 22030): UTME subjects; UTME (O'level) requirements. Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-accountancy-dept-requirements, locator: "Admission requirement (English, Mathematics, Economics and any one of Book keeping & Accounts, Commerce or Government; not more than two sittings)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (b) acceptable Social Science subjects, PDF pp. 5–6"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB (IBASS 22030) asks for English, Mathematics, Economics "and any other two subjects" at O'level. UNN's
+      Accountancy department requires one of those to be Book-keeping & Accounts, Commerce or Government. We encode
+      UNN's stricter rule.
+
+  - id: unn-law-2026-2027
+    programme: unn-law
+    session: "2026/2027"
+    utmeCompulsory: [english, literature-in-english]
+    utmeChoices: [{pick: 2, from: [history, fine-arts, french, igbo, hausa, yoruba, music, crs, irs, economics, commerce, government, geography, financial-accounting]}]
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: literature-in-english}]
+    # "Mathematics or any science subject approved by the University" — UNN approved Science list (JAMB §2.2.05(b)),
+    # limited to subjects in our subject list; the rest are covered by a manual check (x-unn-science-note).
+    olevelChoices: [{pick: 1, from: [mathematics, further-mathematics, agricultural-science, biology, chemistry, physics, geography, health-science, food-and-nutrition], minGrade: C6}]
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - *unn-science-note
+      - *unn-conditions
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "LAW (IBASS programme 22033): UTME subjects; UTME (O'level) requirements (\"obtained at a maximum of two sittings\"). Entry updated 2021-11-19"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-law-faculty-requirements, locator: "Admission requirement (English Language, English Literature and a Science subject)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (b) acceptable Science, Arts and Social Science subjects, PDF pp. 5–6"}
+      - {source: src-jamb-brochure-law, locator: "Law section, UTME SUBJECTS (i), PDF p. 10 (\"BOWEN, ILORIN, UNN, BENIN, AAU and OAU require Literature in English plus any two (2) subjects\")"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UTME: JAMB's UNN entry (IBASS 22033) asks for Literature in English "and any other two arts or social science
+      subjects"; JAMB's brochure remarks (Law, PDF p. 10) say UNN requires "Literature in English plus any two (2)
+      subjects". We encode the stricter rule: two Arts or Social Science subjects from UNN's approved lists.
+
+  - id: unn-mass-communication-2026-2027
+    programme: unn-mass-communication
+    session: "2026/2027"
+    utmeCompulsory: [english, literature-in-english]
+    utmeChoices: [{pick: 2, from: [history, fine-arts, french, igbo, hausa, yoruba, music, crs, irs, economics, commerce, government, geography, financial-accounting]}]
+    utmeMinScore: 160
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: literature-in-english}]
+    olevelChoices: [{pick: 1, from: [mathematics, further-mathematics, agricultural-science, biology, chemistry, physics, geography, health-science, food-and-nutrition], minGrade: C6}]
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "You also need at least an O'level pass (not necessarily a credit) in Mathematics."
+      - *unn-science-note
+      - *unn-conditions
+    citations:
+      - {source: src-jamb-ibass-unn, locator: "MASS COMMUNICATION (IBASS programme 22092): UTME subjects; UTME (O'level) requirements; Remarks (\"UNN requires credit level passes in Literature in English and an approved science subject plus 'O' Level pass in Mathematics\"; \"UNN and BENIN require Literature in English and any two (2) subjects…\"). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-unn-masscom-dept-requirements, locator: "Admission requirement (English Language, Literature in English and an approved science subject; a pass in Mathematics is also required)"}
+      - {source: src-jamb-brochure-specific-entry, locator: "§2.2.05 University of Nigeria, Nsukka (b) acceptable Science, Arts and Social Science subjects, PDF pp. 5–6"}
+      - {source: src-unn-2026-screening-advert, locator: "para. 1; eligibility bullets 2–3"}
+      - {source: src-unn-2026-putme-suspended, locator: "Announcement of 2026-08-21 (online screening test suspended)"}
+      - {source: src-unn-2017-cutoff-disclaimer, locator: "Disclaimer (no official publication of cut-off marks)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's entry (IBASS 22092) asks only for "any three Arts and Social Science subjects" (UTME) and five credits
+      "to include English Language" (O'level). JAMB's own remarks for UNN, and UNN's Mass Communication department,
+      additionally require Literature in English, an approved science subject and an O'level pass in Mathematics. JAMB's
+      remark allows the 4th UTME subject to be any subject as long as one is Arts/Social Science; we encode the stricter
+      reading: Literature plus two Arts/Social Science subjects.
+
+  # ============================================================== OBAFEMI AWOLOWO UNIVERSITY
+  # Institution-wide: UTME ≥ 200 (2026 notice); five credits in not more than two sittings (Faculty of Science general
+  # requirements; Social Sciences); Medicine one sitting. Exams named: WAEC/WASCE, NECO, GCE.
+  # Per-course subjects: OAU central requirements (2023). JAMB entries omit English from UTME subjects (implicit).
+  - id: oau-medicine-and-surgery-2026-2027
+    programme: oau-medicine-and-surgery
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*oau-conditions]
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 3, Medicine row (UTME subjects; O'level)"}
+      - {source: src-oau-bms-handbook-2020, locator: "PDF pp. 51–52, Entry Requirements (i) (\"provided all the subjects are taken and passed at a single sitting\")"}
+      - {source: src-jamb-ibass-oau, locator: "MEDICINE & SURGERY (IBASS programme 18019). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1 (first choice; scored 200 and above)"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: oau-nursing-science-2026-2027
+    programme: oau-nursing-science
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*oau-conditions]
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 3, Nursing row (UTME subjects; O'level)"}
+      - {source: src-oau-bms-handbook-2020, locator: "PDF p. 91, Nursing Science §4A (\"in not more than two sittings\")"}
+      - {source: src-oau-nursing-dept-handbook-2019, locator: "PDF p. 28, §2.3A (\"in one sitting\")"}
+      - {source: src-jamb-ibass-oau, locator: "NURSING/NURSING SCIENCE (IBASS programme 18017). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      OAU's Faculty of Basic Medical Sciences handbook (p. 91) allows the five Nursing credits "in not more than two
+      sittings"; the Department of Nursing Science handbook (p. 28) says "in one sitting". We encode the stricter rule:
+      one sitting.
+
+  - id: oau-electronic-electrical-engineering-2026-2027
+    programme: oau-electronic-electrical-engineering
+    session: "2026/2027"
+    utmeCompulsory: [english, chemistry, physics, mathematics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: [{pick: 1, from: [biology, agricultural-science, further-mathematics], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*oau-conditions]
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 4, Electronic and Electrical Engineering row"}
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 9, Entrepreneurship row (one Social Science subject: Economics, Government and Geography)"}
+      - {source: src-oau-eee-dept-admissions, locator: "O'Level Requirements (WAEC/NECO/GCE, not more than two sittings; \"Any other science subject\")"}
+      - {source: src-jamb-ibass-oau, locator: "ELECTRICAL /ELECTRONICS ENGINEERING (IBASS programme 18089). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      For the fifth O'level credit, OAU's central requirements (2023, p. 4) list Biology, Agricultural Science,
+      Economics, Geography or Further Mathematics; the department page and JAMB (IBASS 18089) ask for "any other science
+      subject". OAU's own requirements group Economics and Geography as Social Science subjects (p. 9), so we count only
+      Biology, Agricultural Science and Further Mathematics.
+
+  - id: oau-computer-science-with-mathematics-2026-2027
+    programme: oau-computer-science-with-mathematics
+    session: "2026/2027"
+    utmeCompulsory: [english, chemistry, physics, mathematics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: [{pick: 1, from: [biology, further-mathematics], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*oau-conditions]
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 5, Computer Science with Mathematics row"}
+      - {source: src-jamb-ibass-oau, locator: "COMPUTER SCIENCE WITH MATHEMATICS (IBASS programme 18074). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-oau-science-faculty-general-requirements, locator: "General Entry Requirements (not more than two sittings)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UTME: OAU's central requirements (2023, p. 5) require English, Chemistry, Physics and Mathematics; JAMB (IBASS 18074)
+      allows Chemistry, Economics or Biology as the 4th subject. O'level: OAU requires English, Mathematics, Physics,
+      Chemistry plus one of Biology/Agric. Science/Economics/Geography/Further Mathematics; JAMB requires English,
+      Mathematics plus any three of Biology, Chemistry, Physics, Further Mathematics, Technical Drawing. We encode what
+      both accept: Chemistry in UTME; Physics and Chemistry plus Biology or Further Mathematics at O'level.
+
+  - id: oau-economics-2026-2027
+    programme: oau-economics
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, government, economics]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}, {subject: government}]
+    olevelChoices: [{pick: 1, from: [biology, agricultural-science, civic-education, history, irs, crs, yoruba, literature-in-english, chemistry, physics, further-mathematics], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions: [*oau-conditions]
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 8, Economics row"}
+      - {source: src-oau-economics-dept, locator: "Undergraduate admission (\"English, Mathematics Economics and Government in not more than two sittings\")"}
+      - {source: src-oau-fss-general-requirements, locator: "p. 1 (i)–(ii): two sittings; Commerce, Book Keeping and Financial Accounting not acceptable; Department of Economics UTME and O'level lists"}
+      - {source: src-jamb-brochure-social, locator: "Economics section, UTME SUBJECTS (iii), PDF p. 47 (\"OAU requires English Language, Mathematics, Economics and Geography or Government\")"}
+      - {source: src-jamb-ibass-oau, locator: "ECONOMICS (IBASS programme 18014). Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UTME: OAU's central requirements (2023, p. 8) fix the subjects as English, Mathematics, Government and Economics;
+      JAMB (IBASS 18014) allows any of Government, History, Geography, Literature, French or CRS/IRS as the 4th. O'level:
+      the central list asks for Government or Geography plus one more from a list; the Economics department requires
+      Government. The Faculty of Social Sciences document (p. 1) gives UTME "English Language, Mathematics, Economics,
+      Geography or Government" and a fifth O'level list that differs from the central one (it has Hausa, Igbo, Computer
+      Studies and Data Processing but not ICT). We encode the stricter rule: Government in both UTME and O'level, and for
+      the fifth credit only the 11 subjects both lists share.
+
+  - id: oau-management-and-accounting-2026-2027
+    programme: oau-management-and-accounting
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, economics, financial-accounting]
+    utmeChoices: []
+    utmeMinScore: 200
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    olevelChoices: [{pick: 2, from: [financial-accounting, government, geography, literature-in-english, biology, yoruba, computer-studies, ict], minGrade: C6}]
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO, GCE]
+    specialConditions:
+      - "O'level: Computer Studies and ICT count as one option between them."
+      - *oau-conditions
+    citations:
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 14, Management & Accounting row"}
+      - {source: src-oau-requirements-part1-2023, locator: "PDF p. 9, Entrepreneurship row (\"one Social Science subject (Economics, Government and Geography)\")"}
+      - {source: src-jamb-ibass-oau, locator: "ACCOUNTING (IBASS programme 18006): UTME \"Mathematics, Economics plus any Social Science subject\". Entry created 2019-11-03, never updated"}
+      - {source: src-jamb-2024-utme-manual, locator: "§1.2(ii), PDF p. 8: \"The Use of English is compulsory\" (JAMB lists only the other three UTME subjects for this course)"}
+      - {source: src-jamb-brochure-administration, locator: "Accounting section, UTME SUBJECTS (viii), PDF p. 9 (\"OAU requires Principles of Accounts not Commerce\")"}
+      - {source: src-oau-science-faculty-general-requirements, locator: "General Entry Requirements (not more than two sittings)"}
+      - {source: src-oau-2026-screening-notice, locator: "para. 1"}
+      - {source: src-oau-2026-putme-new-date, locator: "para. 1 (screening 25–30 September 2026)"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      UTME 4th subject: OAU's central requirements (2023, p. 14) allow Accounting, Government, Geography or Computer
+      Studies/ICT; JAMB's entry (IBASS 18006) says "any Social Science subject"; JAMB's brochure remarks (Accounting,
+      PDF p. 9) say "OAU requires Principles of Accounts not Commerce". We encode the strictest reading: Principles of
+      Accounts (Financial Accounting) is the required 4th UTME subject.
+
+  # ============================================================== LAGOS STATE UNIVERSITY
+  # Institution-wide: UTME ≥ 195; five credits in not more than two sittings except Medicine (one sitting); Engineering
+  # needs six credits at two sittings; English credit compulsory. LASU names only "SSCE (or equivalent)" → WAEC, NECO.
+  # LASU publishes no list of what counts as "Science" or "Arts/Social Science" subjects; where a rule depends on one,
+  # it is a manual check and the requirement stays `unverified` (code cannot fully check it).
+  - id: lasu-medicine-and-surgery-2026-2027
+    programme: lasu-medicine-and-surgery
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: 195
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 1
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions: [*lasu-conditions]
+    citations:
+      - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
+      - {source: src-lasu-2026-screening-reopening, locator: "para. 2 (reopened 6–9 August for awaited results)"}
+      - {source: src-lasu-2026-screening-announcement, locator: "§2.0 Eligibility (first choice; minimum of 195; age) and Step III (five credits, not more than two sittings except Medicine and Dentistry: ONLY one sitting)"}
+      - {source: src-lasu-course-requirement-checker, locator: "Medicine and Surgery: O-Level and JAMB UTME subject requirements"}
+      - {source: src-jamb-ibass-lasu, locator: "MEDICINE & SURGERY (IBASS programme 15301): UTME subjects; O'level \"… at one sitting\". Entry updated 2024-10-30"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: lasu-nursing-science-2026-2027
+    programme: lasu-nursing-science
+    session: "2026/2027"
+    utmeCompulsory: [english, physics, chemistry, biology]
+    utmeChoices: []
+    utmeMinScore: 195
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}, {subject: biology}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: false
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions: [*lasu-conditions]
+    citations:
+      - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
+      - {source: src-lasu-2026-screening-reopening, locator: "para. 2 (reopened 6–9 August for awaited results)"}
+      - {source: src-lasu-2026-screening-announcement, locator: "§2.0 Eligibility and Step III (five credits, not more than two sittings)"}
+      - {source: src-lasu-course-requirement-checker, locator: "Nursing: O-Level and JAMB UTME subject requirements"}
+      - {source: src-jamb-ibass-lasu, locator: "NURSING/NURSING SCIENCE (IBASS programme 15298): \"… at not more than two sittings\". Entry updated 2024-10-30"}
+    verificationStatus: verified
+    lastVerified: "2026-10-03"
+    conflictNote: null
+
+  - id: lasu-computer-science-2026-2027
+    programme: lasu-computer-science
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, physics, chemistry]
+    utmeChoices: []
+    utmeMinScore: 195
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "Manual check: your fifth O'level credit must be another science subject (JAMB: 'one (1) other Science subject'; LASU's checker names Further Mathematics, Computer Studies or 'Science'). LASU publishes no full list, so this checker cannot confirm it."
+      - *lasu-conditions
+    citations:
+      - {source: src-lasu-course-requirement-checker, locator: "Computer Science: O-Level \"English Language, Mathematics, Physics, and any subject from Chemistry, Further Mathematics, Computer Studies, Science\"; UTME \"ENG, MAT, PHY, and any subject from BIO, CHE, AGR, ECO, GEO\""}
+      - {source: src-jamb-ibass-lasu, locator: "COMPUTER SCIENCE (IBASS programme 15337): \"… any other relevant Science subjects in not more than two sittings\". Entry updated 2024-10-30"}
+      - {source: src-lasu-2026-screening-announcement, locator: "§2.0 Eligibility and Step III"}
+      - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
+      - {source: src-lasu-2026-screening-reopening, locator: "para. 2 (reopened 6–9 August for awaited results)"}
+      - {source: src-jamb-brochure-sciences, locator: "Computer Science section (PDF pp. 184–210): O'level remark (vii), PDF p. 200 (\"… LASU and IGBINEDION require five (5) 'O' Level credit passes to include English Language, Mathematics, Physics, Chemistry and one (1) other Science subject\"); UTME SUBJECTS (iv), PDF p. 209 (\"… LASU, IBADAN … require Mathematics, Physics and Chemistry\")"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      LASU's 2026 course checker and JAMB's LASU entry (IBASS 15337, truncated remarks) accept Biology, Chemistry, Agric.
+      Science, Economics or Geography as the 4th UTME subject and do not require Chemistry at O'level. JAMB's brochure
+      remarks for Computer Science (PDF p. 209 UTME SUBJECTS iv; p. 200 O'level vii) say LASU requires Mathematics,
+      Physics and Chemistry at UTME, and Chemistry plus one other science at O'level. We encode the stricter rule.
+
+  - id: lasu-electronics-computer-engineering-2026-2027
+    programme: lasu-electronics-computer-engineering
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, physics, chemistry]
+    utmeChoices: []
+    utmeMinScore: 195
+    lastCutoff: null
+    olevelMinCredits: 6
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: physics}, {subject: chemistry}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "Manual check: of your two credits beyond English, Mathematics, Physics and Chemistry, one must be a science subject (the other can be any subject). LASU publishes no list of science subjects, so this checker cannot confirm it."
+      - *lasu-conditions
+    citations:
+      - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
+      - {source: src-lasu-2026-screening-reopening, locator: "para. 2 (reopened 6–9 August for awaited results)"}
+      - {source: src-lasu-2026-screening-announcement, locator: "Step III (Engineering at two sittings: \"Six (6) O' Level Credits including Mathematics, Physics, Chemistry, English Language\")"}
+      - {source: src-lasu-course-requirement-checker, locator: "Electronics and Computer Engineering: O-Level \"English Language, Mathematics, Physics, Chemistry, and any subject from Science\"; UTME \"ENG, MAT, PHY, CHE\""}
+      - {source: src-jamb-ibass-lasu, locator: "ELECTRONICS & COMPUTER ENGINEERING (IBASS programme 15349): \"… other acceptable science subjects at not more than two sittings\"; remark \"LASU Same as in Mechanical Engineering\". Entry updated 2024-10-30"}
+      - {source: src-jamb-brochure-engineering, locator: "Mechanical Engineering section, O'level remark (viii), PDF p. 61 (\"LASU requires six (6) 'O' Level credit passes in Mathematics, Physics, Chemistry, English Language, one Science subject and any other subject at not more than two (2) sittings\")"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      LASU's 2026 announcement asks Engineering candidates for six credits only when they use two sittings (five
+      otherwise). JAMB's brochure (Electrical group: "LASU Same as in Mechanical Engineering"; Mechanical remark viii,
+      PDF p. 61) requires six credits — Mathematics, Physics, Chemistry, English, one science and any other subject —
+      whatever the number of sittings. We encode the stricter rule: six credits.
+
+  - id: lasu-economics-2026-2027
+    programme: lasu-economics
+    session: "2026/2027"
+    utmeCompulsory: [english, mathematics, economics]
+    utmeChoices: [{pick: 1, from: [government, history, geography, literature-in-english, french, crs, irs, commerce, financial-accounting]}]
+    utmeMinScore: 195
+    lastCutoff: null
+    olevelMinCredits: 5
+    olevelCompulsory: [{subject: english}, {subject: mathematics}, {subject: economics}]
+    olevelChoices: []
+    olevelOtherSubjectsCount: true
+    olevelMaxSittings: 2
+    olevelAcceptedExams: [WAEC, NECO]
+    specialConditions:
+      - "Manual check: your two other O'level credits should be Arts or Social Science subjects (JAMB's brochure and LASU's 2026 course checker). LASU publishes no list, so this checker cannot confirm them."
+      - *lasu-conditions
+    citations:
+      - {source: src-jamb-ibass-lasu, locator: "ECONOMICS (IBASS programme 15297): UTME subjects; O'level \"… at least five credit passes, at not more than two sittings including Mathematics, English Language and Economics\". Entry updated 2024-10-30"}
+      - {source: src-lasu-course-requirement-checker, locator: "Economics: O-Level \"English Language, Mathematics, Economics, and any subject from Arts or Social Science\"; UTME \"ENG, MAT, ECO, and any subject from Arts or Social Science\""}
+      - {source: src-lasu-2026-screening-announcement, locator: "§2.0 Eligibility and Step III"}
+      - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
+      - {source: src-lasu-2026-screening-reopening, locator: "para. 2 (reopened 6–9 August for awaited results)"}
+      - {source: src-jamb-brochure-social, locator: "Economics section: UTME requirement column, PDF p. 33 (\"… English Language, Mathematics, Economics and any two (2) of Arts or Social Science subjects\"); UTME SUBJECTS (xxvi), PDF p. 49 (\"LASU also accepts Commerce or Principles of Account\")"}
+    verificationStatus: conflicting
+    lastVerified: "2026-10-03"
+    conflictNote: >
+      JAMB's LASU entry (IBASS 15297) only requires credits in Mathematics, English and Economics among five. JAMB's
+      brochure (Economics, PDF p. 33) and LASU's own 2026 course checker restrict the other two to Arts or Social Science
+      subjects, but LASU publishes no list, so that stricter rule is a manual check. UTME 4th subject: IBASS 15297's list
+      plus Commerce or Principles of Account, which the brochure says LASU also accepts (PDF p. 49).

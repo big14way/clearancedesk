@@ -1,0 +1,15 @@
+{
+  "name": "clearance-desk-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch:jamb": "tsx scripts/fetch-jamb-brochure.ts",
+    "build:seed": "tsx scripts/build-ndjson.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5",
+    "yaml": "^2"
+  }
+}

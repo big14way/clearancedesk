@@ -1,0 +1,555 @@
+# Every source behind data/catalog.yaml. `file` is the local copy in data/raw/ (gitignored, third-party content).
+# authority: official = JAMB or the university itself; secondary = news/blogs (used only to surface conflicts in the
+# Knowledge Base, never as ground truth in the dataset).
+
+# ---------------------------------------------------------------- JAMB
+- id: src-jamb-ibass-unilag
+  title: "JAMB IBASS brochure — University of Lagos programmes"
+  url: https://ibass.jamb.gov.ng/brochure-by-institution
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb-ibass/unilag.json
+  notes: >
+    JAMB's official online brochure (Integrated Brochure & Syllabus System). Raw data from
+    POST https://ibass-api.jamb.gov.ng/api/ibass/institution/programmes/494 (scripts/fetch-jamb-brochure.ts).
+    Each programme entry has "UTME subjects", "UTME requirements" (O'level) and "Remarks" fields and its own updated_at date.
+
+- id: src-jamb-ibass-ui
+  title: "JAMB IBASS brochure — University of Ibadan programmes"
+  url: https://ibass.jamb.gov.ng/brochure-by-institution
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb-ibass/ui.json
+  notes: Raw data from POST https://ibass-api.jamb.gov.ng/api/ibass/institution/programmes/392.
+
+- id: src-jamb-ibass-oau
+  title: "JAMB IBASS brochure — Obafemi Awolowo University programmes"
+  url: https://ibass.jamb.gov.ng/brochure-by-institution
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb-ibass/oau.json
+  notes: Raw data from POST https://ibass-api.jamb.gov.ng/api/ibass/institution/programmes/620.
+
+- id: src-jamb-ibass-unn
+  title: "JAMB IBASS brochure — University of Nigeria, Nsukka programmes"
+  url: https://ibass.jamb.gov.ng/brochure-by-institution
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb-ibass/unn.json
+  notes: Raw data from POST https://ibass-api.jamb.gov.ng/api/ibass/institution/programmes/805.
+
+- id: src-jamb-ibass-lasu
+  title: "JAMB IBASS brochure — Lagos State University programmes"
+  url: https://ibass.jamb.gov.ng/brochure-by-institution
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb-ibass/lasu.json
+  notes: Raw data from POST https://ibass-api.jamb.gov.ng/api/ibass/institution/programmes/503.
+
+- id: src-jamb-brochure-specific-entry
+  title: "JAMB UTME Brochure — 2.2 Specific Entry Requirements and Other Information for Each University"
+  url: https://ibass.jamb.gov.ng/static/media/specificEntry.10c0bc7fcf0d02c8bcd7.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-specificEntry.pdf
+  notes: >
+    Linked from https://ibass.jamb.gov.ng/brochure-by-programme ("Specific Entry Requirements"). PDF created 2025-01-27.
+    University-wide rules (credits, sittings) and each university's approved Arts / Science / Social Science subject lists.
+    Locators use PDF page numbers (the printed page numbers are cut off in the two-column layout).
+
+- id: src-jamb-home-2026-policy
+  title: "JAMB homepage notice — 2026 Policy Meeting minimum tolerable admission scores"
+  url: https://www.jamb.gov.ng/
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-homepage-2026-10-03.html
+  notes: '"The 2026 Policy Meeting has approved the following minimum tolerable admission scores: - Universities: 150 …" and minimum admission age of sixteen (16).'
+
+# ---------------------------------------------------------------- University of Lagos
+- id: src-unilag-2026-post-utme-notice
+  title: "UNILAG — Important Notice on 2026/2027 Post-UTME Screening Exercise"
+  url: https://unilag.edu.ng/important-notice-on-2026-2027-post-utme-screening-exercise/
+  publisher: University
+  authority: official
+  publishedAt: 2026-06-09
+  retrievedAt: 2026-10-03
+  file: data/raw/unilag/unilag-2026-2027-post-utme-notice.html
+  notes: Signed by the Registrar. Eligibility (UTME ≥ 200, first choice), five credits at one sitting, age, compulsory Post-UTME test.
+
+- id: src-unilag-2026-olevel-upload-extension
+  title: "UNILAG — 2026/2027 Admission Exercise: Extension of Deadline for O'Level Result Upload"
+  url: https://unilag.edu.ng/2026-2027-admission-exercise-extension-of-deadline-for-olevel-result-upload/
+  publisher: University
+  authority: official
+  publishedAt: 2026-08-18
+  retrievedAt: 2026-10-03
+  file: data/raw/unilag/unilag-2026-2027-olevel-upload-deadline-extension.html
+  notes: Names the results to upload — "WAEC, NECO, GCE, and Cambridge O'Level". NABTEB is not mentioned.
+
+- id: src-unilag-2026-merit-cutoffs
+  title: "UNILAG Releases 2026/2027 UTME Merit Cut-Off Marks"
+  url: https://unilag.edu.ng/unilag-releases-2026-2027-utme-merit-cut-off-marks/
+  publisher: University
+  authority: official
+  publishedAt: 2026-09-16
+  retrievedAt: 2026-10-03
+  file: data/raw/unilag/unilag-2026-2027-utme-merit-cut-off-marks.html
+  notes: Merit and catchment cut-offs per programme. They are aggregate scores, not UTME scores; the page does not state the scale.
+
+- id: src-unilag-2025-admission-requirements
+  title: "UNILAG — 2025/2026 Admission Requirements (departmental UTME and O'level requirements)"
+  url: https://admissions.unilag.edu.ng/assets/file/2025-2026_Admission_Requirements.pdf
+  publisher: University
+  authority: official
+  publishedAt: 2025-05-15
+  retrievedAt: 2026-10-03
+  file: data/raw/unilag/unilag-2025-2026-admission-requirements.pdf
+  notes: Latest departmental requirements UNILAG has published (a 2026-2027 file at the same path returns 404). PDF creation date used as publishedAt.
+
+# ---------------------------------------------------------------- University of Ibadan
+- id: src-ui-2026-post-utme-advert
+  title: "UI — Post UTME/Direct Entry Screening of Prospective Candidates for the 2026/2027 Admission Exercise"
+  url: https://ui.edu.ng/news/post-utmedirect-entry-screening-prospective-candidates-20262027-admission-exercise
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/ui/ui-2026-post-utme-de-screening-advert.html
+  notes: Signed by the Registrar; no publish date shown. Post-UTME dates, age, one sitting for College of Medicine/Pharmacy, six credits if two results.
+
+- id: src-ui-2026-regulation
+  title: "University of Ibadan — Requirements for the U.T.M.E. and Direct Entry (2026-2027 review)"
+  url: https://admissions.ui.edu.ng/Regulation.pdf
+  publisher: University
+  authority: official
+  publishedAt: 2026-06-03
+  retrievedAt: 2026-10-03
+  file: data/raw/ui/ui-regulation-utme-olevel-requirements.pdf
+  notes: Per-programme UTME subjects and O'level requirements. Internal title "2026-2027 Review UNDERGRADUATE REGULATION_15-4-2026"; PDF created 2026-06-03.
+
+- id: src-ui-2026-cutoff-marks
+  title: "UI Undergraduate Admissions Unit — 2026/2027 Admission Exercise: Cut Off Marks"
+  url: https://admissions.ui.edu.ng/uploadedfilefolder/2026-27_UI_admission_cutoff_marks.pdf
+  publisher: University
+  authority: official
+  publishedAt: 2026-08-17
+  retrievedAt: 2026-10-03
+  file: data/raw/ui/ui-2026-27-admission-cutoff-marks.pdf
+  notes: Merit / catchment / ELDS cut-offs per programme. UI does not state what the numbers measure or their scale.
+
+# ---------------------------------------------------------------- Secondary (Knowledge Base conflicts only)
+- id: src-blog-myunipress-unilag-cutoff
+  title: "myunipress — UNILAG cut-off mark and admission requirements"
+  url: https://myunipress.com/unilag-cut-off-mark-and-admission-requirements/
+  publisher: News/Blog
+  authority: secondary
+  retrievedAt: 2026-10-03
+  notes: Labels UNILAG's official 2025/2026 cut-offs as "2026/2027". Kept only to surface the conflict in the Knowledge Base.
+
+- id: src-blog-brands-ui-cutoff
+  title: "brands.ng — University of Ibadan cut-off mark 2026"
+  url: https://brands.ng/blog/university-of-ibadan-cut-off-mark-2026/
+  publisher: News/Blog
+  authority: secondary
+  retrievedAt: 2026-10-03
+  notes: Claims a 200 general cut-off, NABTEB acceptance and "not more than two sittings for most programmes" — none of which UI's 2026 documents state.
+
+# ---------------------------------------------------------------- University of Nigeria, Nsukka
+- id: src-unn-2026-screening-advert
+  title: "UNN — 2026/2027 Screening Exercise for Admission"
+  url: https://www.unn.edu.ng/2026-2027-screening-exercise-for-admission/
+  publisher: University
+  authority: official
+  publishedAt: 2026-07-13
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-2026-2027-screening-exercise-for-admission.html
+  notes: Registrar's notice. UTME 160 and above, UNN first choice, age 16 by 30 Sept 2026, "O/Level 2 (For double sitting candidates)", GCE/NECO Nov/Dec 2026 awaiting candidates not eligible.
+
+- id: src-unn-2026-putme-suspended
+  title: "UNN — Announcement: 2026/2027 online screening test suspended"
+  url: https://www.unn.edu.ng/announcement-announcement-announcement-2/
+  publisher: University
+  authority: official
+  publishedAt: 2026-08-21
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-2026-08-21-online-screening-test-suspended.html
+  notes: The Post-UTME online test "has been suspended due to some unforeseen technical issues". No new date found as of 2026-10-03.
+
+- id: src-unn-2026-olevel-upload
+  title: "UNN — Uploading of O'Level Results for the 2026/2027 Undergraduate Admission"
+  url: https://www.unn.edu.ng/uploading-of-olevel-results-for-the-2026-2027-undergraduate-admission/
+  publisher: University
+  authority: official
+  publishedAt: 2026-09-25
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-2026-2027-uploading-olevel-results.html
+  notes: Awaiting-result candidates and those combining WAEC and NECO may upload until 30 September 2026.
+
+- id: src-unn-academics-admission
+  title: "UNN — Academics: Admission (general entry requirements)"
+  url: https://www.unn.edu.ng/academics/admission/
+  publisher: University
+  authority: official
+  publishedAt: 2015-04-10
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-academics-admission.html
+  notes: Five credits incl. English Language and a Science subject in not more than two sittings. Last modified 2016-05-12.
+
+- id: src-unn-calendar-2016-2018
+  title: "University of Nigeria Calendar 2016–2018 (full document)"
+  url: https://www.unn.edu.ng/wp-content/uploads/2023/12/2016-2018-Calendar-Full-Document.pdf
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-calendar-2016-2018-full-document.pdf
+  notes: 917 pages; uploaded to unn.edu.ng in Dec 2023. MB,BS entry requirement (one sitting) on PDF p. 667.
+
+- id: src-unn-physicalscs-faculty-requirements
+  title: "UNN Faculty of Physical Sciences — Admission requirement table"
+  url: https://physicalscs.unn.edu.ng/faculty/admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2015-10-09
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-physicalscs-faculty-admission-requirement.html
+
+- id: src-unn-computer-science-dept-requirements
+  title: "UNN Department of Computer Science — Admission requirement"
+  url: https://physicalscs.unn.edu.ng/computer-science-department-admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2015-10-30
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-physicalscs-computer-science-admission-requirement.html
+
+- id: src-unn-electrical-dept-requirements
+  title: "UNN Department of Electrical Engineering — Admission requirement"
+  url: https://electrical.unn.edu.ng/admission-requirement-3/
+  publisher: University
+  authority: official
+  publishedAt: 2018-03-19
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-electrical-dept-admission-requirement.html
+
+- id: src-unn-socialscs-faculty-requirements
+  title: "UNN Faculty of the Social Sciences — Admission requirement table"
+  url: https://socialscs.unn.edu.ng/faculty/admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2015-10-11
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-socialscs-faculty-admission-requirement.html
+
+- id: src-unn-accountancy-dept-requirements
+  title: "UNN Department of Accountancy — Admission requirement"
+  url: https://accountancy.unn.edu.ng/admission-resuirement/
+  publisher: University
+  authority: official
+  publishedAt: 2018-03-12
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-accountancy-dept-admission-requirement.html
+
+- id: src-unn-law-faculty-requirements
+  title: "UNN Faculty of Law — Admission requirement"
+  url: https://law.unn.edu.ng/faculty/admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2015-10-11
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-law-faculty-admission-requirement.html
+
+- id: src-unn-masscom-dept-requirements
+  title: "UNN Department of Mass Communication — Admission requirement"
+  url: https://masscom.unn.edu.ng/admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2018-03-12
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-masscom-dept-admission-requirement.html
+
+- id: src-unn-nursing-dept-requirements
+  title: "UNN Department of Nursing Sciences — Admission requirement"
+  url: https://nursing.unn.edu.ng/admission-requirement/
+  publisher: University
+  authority: official
+  publishedAt: 2018-03-12
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-nursing-admission-requirement.html
+
+- id: src-blog-allschool-unn-cutoff
+  title: "allschool.ng — UNN departmental cut-off mark"
+  url: https://allschool.ng/unn-departmental-cutoff-mark/
+  publisher: News/Blog
+  authority: secondary
+  retrievedAt: 2026-10-03
+  notes: Publishes "merit" cut-offs (e.g. Medicine 318) and an aggregate formula. UNN has published no departmental cut-offs and disowns unofficial lists.
+
+# ---------------------------------------------------------------- Obafemi Awolowo University
+- id: src-oau-2026-screening-notice
+  title: "OAU — 2026 Admission Screening Exercise for UTME and Direct Entry Candidates"
+  url: https://oauife.edu.ng/2026-admission-screening-exercise-for-utme-and-direct-entry-candidates/
+  publisher: University
+  authority: official
+  publishedAt: 2026-07-20
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-2026-admission-screening-exercise.html
+  notes: OAU first choice and UTME 200 and above; physical screening. Detailed eligibility guidelines are on eportal2.oauife.edu.ng/ug/admission-guidelines, which did not render (blank) even in a real browser on 2026-10-03.
+
+- id: src-oau-2026-putme-new-date
+  title: "OAU 2026 Post-UTME Screening Exercise: New Date Announced"
+  url: https://oauife.edu.ng/oau-2026-post-utme-screening-exercise-new-date-announced/
+  publisher: University
+  authority: official
+  publishedAt: 2026-08-28
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-2026-post-utme-new-date.html
+  notes: Screening rescheduled to 25–30 September 2026; registration deadline 23 September 2026.
+
+- id: src-oau-requirements-part1-2023
+  title: "OAU — Requirements for Admission into Part I and Direct Entry in the Faculties"
+  url: https://oauife.edu.ng/wp-content/uploads/2023/05/OAU-ILE-IFE-Admission-Requiremants-into-Part-1-and-DE-for-Faculties-1-2.pdf
+  publisher: University
+  authority: official
+  publishedAt: 2023-05-02
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-admission-requirements-part1-de-faculties-2023.pdf
+  notes: Linked from https://oauife.edu.ng/admission-undergraduate-studies/. Per-course UTME and O'level subjects. PDF created 2023-05-02.
+
+- id: src-oau-science-faculty-general-requirements
+  title: "OAU Faculty of Science — Undergraduate: General Entry Requirements"
+  url: https://science.oauife.edu.ng/undergraduate/
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-science-faculty-undergraduate.html
+  notes: Five credits "taken and passed at not more than two sittings"; Mathematics credit required except for Arts and Law. Page modified 2019-12-18.
+
+- id: src-oau-bms-handbook-2020
+  title: "OAU Faculty of Basic Medical Sciences Handbook 2019–2024"
+  url: https://documents.oauife.edu.ng/download/faculty-of-basic-medical-sciences-handbook/
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-faculty-basic-medical-sciences-handbook-2020.pdf
+  notes: MB.ChB entry requirements (single sitting) on PDF pp. 51–52; Nursing (not more than two sittings) on PDF p. 91. PDF created January 2020.
+
+- id: src-oau-nursing-dept-handbook-2019
+  title: "OAU Department of Nursing Science — Student Handbook (2019)"
+  url: https://nunsa.oauife.edu.ng/wp-content/uploads/2025/08/Nursing-Dept-Handbook.pdf
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-nursing-dept-handbook-2019.pdf
+  notes: Departmental handbook hosted on the nursing students' association subdomain of oauife.edu.ng. PDF p. 28 says O'level credits "in one sitting".
+
+- id: src-oau-eee-dept-admissions
+  title: "OAU Department of Electronic & Electrical Engineering — Admissions"
+  url: https://eee.oauife.edu.ng/admissions.php
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-eee-dept-admissions.html
+  notes: Five credits (WAEC/NECO/GCE) in not more than two sittings; fifth subject "Any other science subject (e.g., Biology, Further Mathematics, Technical Drawing)". Undated.
+
+- id: src-oau-economics-dept
+  title: "OAU Department of Economics — About the Department"
+  url: https://ecn.oauife.edu.ng/about-the-department/
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-economics-dept-about.html
+  notes: O'level credits "including English, Mathematics Economics and Government in not more than two sittings". Modified 2019-10-12.
+
+- id: src-oau-fss-general-requirements
+  title: "OAU Faculty of Social Sciences — General Admission Requirements for All Departments"
+  url: https://fss.oauife.edu.ng/wp-content/uploads/2019/10/General-Admission-Requirments.pdf
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/oau/oau-fss-general-admission-requirements-2019.pdf
+  notes: Five credits in not more than two sittings; "Commerce, Book Keeping, and Financial Accounting are not acceptable in any of the Social Sciences Departments both at UTME and 'O' Level".
+
+- id: src-blog-teezab-oau-cutoff
+  title: "teezab.com — OAU cut-off mark"
+  url: https://www.teezab.com/oau-cut-off-mark/
+  publisher: News/Blog
+  authority: secondary
+  retrievedAt: 2026-10-03
+  notes: Claims course-level "UTME" cut-offs (e.g. Medicine 285, Law 270) with no official basis; OAU's 2026 notice states only 200.
+
+- id: src-ui-matriculating-subjects
+  title: "University of Ibadan — List of Matriculating Subjects (Senate-approved)"
+  url: https://admissions.ui.edu.ng/LIST%20OF%20MATRICULATING%20SUBJECTS.pdf
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/ui/ui-list-of-matriculating-subjects.pdf
+  notes: 27 Senate-approved matriculating subjects, no grouping. PDF created October 2023.
+
+- id: src-unn-2017-cutoff-disclaimer
+  title: "UNN — Disclaimer: UNN cut-off mark"
+  url: https://www.unn.edu.ng/disclaimer-unn-cut-off-mark/
+  publisher: University
+  authority: official
+  publishedAt: 2017-06-05
+  retrievedAt: 2026-10-03
+  file: data/raw/unn/unn-2017-disclaimer-cut-off-mark.html
+  notes: UNN states there has been no official pronouncement or publication of cut-off marks and disowns unofficial lists. 2017 post; the page also carries injected spam links.
+
+# ---------------------------------------------------------------- Lagos State University
+- id: src-lasu-2026-screening-announcement
+  title: "LASU — 2026/2027 Online Admission Screening Exercise for 100 Level Regular and 200 Level Direct Entry Candidates"
+  url: https://lasu.edu.ng/home/news/read.php?id=642
+  publisher: University
+  authority: official
+  publishedAt: 2026-06-01
+  retrievedAt: 2026-10-03
+  file: data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html
+  notes: >
+    Registrar's announcement. LASU first choice and UTME ≥ 195; age 16 by 1 Oct 2026; five credits in not more than two
+    sittings except Medicine and Dentistry (one sitting); six credits for Engineering at two sittings; English credit
+    compulsory; exams taken after July 2026 not acceptable; screening by point grading (UTME + best five relevant SSCE
+    grades), no separate test. The article body loads via news/ajax/read.php; the saved file is that fragment.
+
+- id: src-lasu-2026-screening-reopening
+  title: "LASU — 2026/2027 screening portal reopening for candidates with awaiting results"
+  url: https://lasu.edu.ng/home/news/read.php?id=660
+  publisher: University
+  authority: official
+  publishedAt: 2026-08-06
+  retrievedAt: 2026-10-03
+  file: data/raw/lasu/lasu-news-660-2026-2027-screening-portal-reopening-awaiting-results-2026-08-06.html
+  notes: Portal reopened 6–9 Aug 2026 for candidates whose awaited O'level results had been released.
+
+- id: src-lasu-course-requirement-checker
+  title: "LASU Admissions Portal — Course Requirements Checker (O-Level & UTME subjects)"
+  url: https://services.lidc.lasu.edu.ng/admissionscreening/courserequirement/index.php
+  publisher: University
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/lasu/lasu-screening-courserequirement-2026-10-03.html
+  notes: >
+    LASU-DICT tool "as listed in the JAMB Brochure"; results are returned by POST course=<code>. Saved per course as
+    data/raw/lasu/lasu-screening-courserequirement-<course>-2026-10-03.html.
+
+# ---------------------------------------------------------------- JAMB policy (Knowledge Base + citations)
+- id: src-jamb-2024-utme-manual
+  title: "JAMB — 2024 UTME Examination Manual for Officials (updated)"
+  url: https://www.jamb.gov.ng/pdfs/2024/2024_EXAMINATION_MANUAL(updated).pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-2024-utme-manual-for-officials-use-of-english-compulsory.pdf
+  notes: '§1.2(ii), printed p. 2 (PDF p. 8): "The Use of English is compulsory, and it consists of sixty (60) multiple-choice questions." 2024 edition; no 2026 restatement was found.'
+
+- id: src-jamb-bulletin-2026-05-18
+  title: "JAMBulletin, 18 May 2026 (Vol. 4 No. 85) — 2026 Policy Meeting outcome"
+  url: https://www.jamb.gov.ng/Bulletin/2026/JAMBulletin_18-05-2026.pdf
+  publisher: JAMB
+  authority: official
+  publishedAt: 2026-05-18
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-bulletin-2026-05-18-policy-meeting-outcome-vol4-no85.pdf
+  notes: >
+    PDF p. 17: "Universities should be 150, Colleges of Nursing, 150, and Polytechnics…" and institutions may not lower
+    the score. PDF p. 1: candidates for Colleges of Education and non-technological Agricultural programmes "register for
+    the UTME without sitting the examination" (not university degree programmes).
+
+- id: src-jamb-faq
+  title: "JAMB — Frequently Asked Questions"
+  url: https://www.jamb.gov.ng/FAQ.aspx
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-faq-page-2026-10-03.html
+  notes: 'Q21: JAMB will not consider an institution''s recommendation if the candidate has not uploaded O''level results.'
+
+- id: src-blog-thewillnews-age-18
+  title: "The Will — FG sets 18 years as minimum entry age into tertiary institutions"
+  url: https://thewillnews.com/fg-sets-18-years-as-minimum-entry-age-into-tertiary-institutions
+  publisher: News/Blog
+  authority: secondary
+  publishedAt: 2024-07-18
+  retrievedAt: 2026-10-03
+  notes: Claims an 18+ minimum age. JAMB's 2026 homepage and bulletins say sixteen (16). Kept for the Knowledge Base conflict only.
+
+- id: src-blog-abstech-lasu-cutoff
+  title: "abstechconnect — LASU cut-off mark 2026/2027"
+  url: https://www.abstechconnect.com/blogs/lasu-cut-off-mark-20262027-jamb-score-for-all-courses
+  publisher: News/Blog
+  authority: secondary
+  publishedAt: 2026-06-01
+  retrievedAt: 2026-10-03
+  notes: Calls LASU's 195 eligibility minimum "the JAMB cut-off mark". Kept for the Knowledge Base only.
+
+# ---------------------------------------------------------------- JAMB brochure by faculty (full remarks)
+# IBASS `remarks` are cut off at 65,535 characters for long courses; these PDFs carry the full text.
+- id: src-jamb-brochure-sciences
+  title: "JAMB UTME Brochure — Sciences"
+  url: https://ibass.jamb.gov.ng/static/media/sciences2.bad9ac2971d976b5becc.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-sciences2.pdf
+  notes: Linked from https://ibass.jamb.gov.ng/brochure-by-programme. PDF created 2025-01-27. Computer Science section starts PDF p. 184 (printed 635).
+
+- id: src-jamb-brochure-social
+  title: "JAMB UTME Brochure — Social / Management Sciences"
+  url: https://ibass.jamb.gov.ng/static/media/social2.e60f8b472d5ce2c89edc.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-social2.pdf
+  notes: PDF created 2025-01-27. Economics section starts PDF p. 33.
+
+- id: src-jamb-brochure-administration
+  title: "JAMB UTME Brochure — Administration"
+  url: https://ibass.jamb.gov.ng/static/media/administration2.761d70e6bc1b9835cf46.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-administration2.pdf
+  notes: PDF created 2025-01-27. Accounting section starts PDF p. 2.
+
+- id: src-jamb-brochure-medical
+  title: "JAMB UTME Brochure — Medical / Pharmaceutical / Health Sciences"
+  url: https://ibass.jamb.gov.ng/static/media/medical2.405f991c7ddd53f4c45b.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-medical2.pdf
+  notes: PDF created 2025-01-27. Nursing/Nursing Science section starts PDF p. 21 (printed 448); Medicine and Surgery p. 37.
+
+- id: src-jamb-brochure-engineering
+  title: "JAMB UTME Brochure — Engineering / Environmental / Technology"
+  url: https://ibass.jamb.gov.ng/static/media/engineering2.a81443bb885b5e602704.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-engineering2.pdf
+  notes: PDF created 2025-01-27. Electrical/Electronic group from PDF p. 44; Mechanical Engineering from p. 55.
+
+- id: src-jamb-brochure-law
+  title: "JAMB UTME Brochure — Law"
+  url: https://ibass.jamb.gov.ng/static/media/law2.b9d2b9a1d45cec78c1f3.pdf
+  publisher: JAMB
+  authority: official
+  retrievedAt: 2026-10-03
+  file: data/raw/jamb/jamb-brochure-law2.pdf
+  notes: PDF created 2025-01-27.
+
+- id: src-lasu-2026-screening-extension
+  title: "LASU — 2026/2027 online admission screening: two-week extension"
+  url: https://lasu.edu.ng/home/news/read.php?id=649
+  publisher: University
+  authority: official
+  publishedAt: 2026-07-01
+  retrievedAt: 2026-10-03
+  file: data/raw/lasu/lasu-news-649-2026-2027-screening-two-week-extension-2026-07-01.html
+  notes: Screening extended from 30 June to "Tuesday, 14th July 2026 (12 midnight)"; online screening is mandatory.
