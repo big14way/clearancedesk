@@ -1,0 +1,24 @@
+# dependencies
+node_modules
+
+# env (secrets) — only the example is committed
+.env*
+!.env.example
+
+# third-party source documents (not redistributable)
+data/raw/
+
+# build / tool output
+.vercel
+.next
+dist
+.sanity
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / editor
+.DS_Store
+
+# Sanity Context agent skills (third-party; restore with `npx skills experimental_install` from skills-lock.json)
+.claude/skills/
+.claude/settings.local.json
