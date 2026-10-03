@@ -9,14 +9,21 @@ export function clientIp(request: Request): string {
   )
 }
 
-/** Records a hit and says whether this IP is over `limit` requests in the last 10 minutes. */
+/**
+ * Says whether this IP already made `limit` accepted requests in the last 10 minutes, and records the request if not.
+ * Rejected requests don't count: otherwise retrying while limited keeps extending the lockout (the eval hit this).
+ */
 export function overIpLimit(ip: string, limit = 10): boolean {
   const now = Date.now()
   if (hits.size > 5000) hits.clear()
   const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
+  if (recent.length >= limit) {
+    hits.set(ip, recent)
+    return true
+  }
   recent.push(now)
   hits.set(ip, recent)
-  return recent.length > limit
+  return false
 }
 
 export function overDailyCap(): boolean {

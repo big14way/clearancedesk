@@ -183,7 +183,13 @@ export function Checker({options}: {options: FormOptions}) {
         />
       </section>
 
-      <div ref={results} tabIndex={-1} aria-live="polite" className="scroll-mt-4 space-y-4 outline-none">
+      <div
+        ref={results}
+        tabIndex={-1}
+        aria-live="polite"
+        // While checking, reserve a screen's height so the progress can scroll to the top instead of sitting under the form.
+        className={`scroll-mt-4 space-y-4 outline-none ${status === 'loading' ? 'min-h-[85svh]' : ''}`}
+      >
         {status === 'loading' && (
           <>
             <LiveProgress steps={liveSteps} elapsed={elapsed} onCancel={() => abort.current?.abort()} />
