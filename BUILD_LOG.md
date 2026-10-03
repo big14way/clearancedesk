@@ -165,3 +165,37 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - Our dataset's manual check is more cautious: the UNILAG release itself doesn't name the scale.
   - The KB's own overview entry describes UNILAG's aggregate system, so the claim has a source in the KB. I'm noting the difference rather than editing either side.
 - **Unfixed warning:** `next dev`/`next build` warn about two lockfiles (repo root for `scripts/`, plus `web/`). It's harmless locally; I'll revisit at deploy (Phase 7) if Vercel complains.
+
+## 2026-10-03 — Phase 6: UI
+
+- **Pages:**
+  - `/` loads its form options (subjects, plus the institutions and programmes that have a requirement) with GROQ on the server. It's ISR, refreshed every 10 minutes.
+  - `/about` shows live coverage, refreshed every minute.
+  - The Next 16 docs say `cacheComponents` is opt-in. It isn't enabled here, so plain `export const revalidate` is used.
+- **Samples are built from data and tested, not hand-waved.** `lib/samples.ts` has three fictional candidates against verified requirements:
+  - UNILAG CS → ELIGIBLE
+  - LASU Nursing with an awaited NECO Chemistry → AT_RISK, and the test asserts the only warning is `olevel-awaiting`
+  - UNILAG Medicine with Physics from a second sitting → NOT_ELIGIBLE, and the test asserts UTME passes and the sittings check fails
+  - `samples.test.ts` runs the real evaluator on `data/seed.ndjson`. `components/form-state.test.ts` checks that sample → form → request is lossless and passes the API schema.
+- **Bug found through the UI: an intermittent missing explanation.**
+  - The first sample run in the browser showed "the written explanation didn't finish".
+  - Across 14 runs that day, 3 lost the explanation. I captured the raw `submit_verdict` input of one: Sonnet had sent `results` as a **JSON string**, with `policyNotes` placed beside `results` instead of inside it.
+  - `hasToolCall('submit_verdict')` stopped the loop on that invalid call, so the model never got to retry.
+  - Fix, part 1: `readVerdict()` repairs exactly those shapes. Stray notes are kept only when there is one result; otherwise they're dropped rather than guessed. It is unit-tested on the captured shape.
+  - Fix, part 2: the loop now stops only on a *usable* verdict. A malformed one goes back to the model as a validation error, and the model can retry.
+- **Bug: source titles were file names.**
+  - A KB policy note cited `lasu-2026-screening-reopening.md`, the upload file name, as its source title. The KB cites its upload files.
+  - `build-kb-files.ts` names each file after its source id, so `getSourceLookup()` maps either a URL or a KB file name back to our `source` document: real title, URL and official/secondary badge.
+  - Tested live against the dataset, including the `.pdf § overview` variant.
+- **Payload:**
+  - The explore response was 155 KB, because every check carried a full copy of the requirement's citations.
+  - Checks now go out without citations; the card shows the requirement's citations once. That's about 90% smaller.
+- **360px layout bugs, found by measuring `scrollWidth` in a 360px same-origin iframe** (the Chrome window couldn't be resized):
+  1. A shared field class had `w-full`, which beat `w-20` on the grade select. Tailwind applies conflicting utilities in stylesheet order, not class order. The shared class now has no width.
+  2. Fieldsets default to `min-width: min-content`, so long subject names stretched them. Added `min-w-0`.
+  3. Long KB paths didn't wrap. Added `break-all`.
+  4. The About table's always-zero "Unverified" column fell off-screen. It now shows only when non-zero, and full university names are hidden on small screens.
+  - After the fixes, page width is 360 for the eligible, at-risk, rejected, explore and no-data responses, with every `<details>` open.
+- **Blocked:** Anthropic returned "credit balance is too low" for the key copied from the vouch project, part-way through testing. The UI was then checked against responses recorded earlier in this session, served as local mocks that were never committed.
+  - The two agent fixes above are covered by unit tests and a live Sanity check.
+  - They have **not** been re-run end-to-end against Claude. That needs credit.

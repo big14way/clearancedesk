@@ -33,8 +33,8 @@ export const verdictInputSchema = z.object({
             z.object({
               text: z.string().describe('One sentence taken from the Knowledge Base entry.'),
               kbPath: z.string().describe('The entry path you read, copied verbatim from the outline.'),
-              sourceTitle: z.string().optional().describe("The entry's original source title."),
-              sourceUrl: z.string().optional().describe("The entry's original source URL."),
+              sourceTitle: z.string().nullish().describe("The entry's original source title."),
+              sourceUrl: z.string().nullish().describe("The entry's original source URL."),
             }),
           )
           .describe('Policy that matters for this result, only from entries you read with policy_knowledge_base_read.'),
@@ -43,11 +43,49 @@ export const verdictInputSchema = z.object({
     .describe('One item per evaluated requirement. Empty when nothing was found.'),
   noDataReason: z
     .string()
-    .optional()
+    .nullish()
     .describe('Set only when no requirement matched: say plainly what is missing. Never guess a requirement.'),
 })
 
 export type VerdictInput = z.infer<typeof verdictInputSchema>
+
+const maybeJson = (value: unknown): unknown => {
+  if (typeof value !== 'string') return value
+  try {
+    return JSON.parse(value)
+  } catch {
+    return value
+  }
+}
+
+/**
+ * Reads a submit_verdict input, repairing the slips the model has been seen to make: `results` sent as a JSON
+ * string, and policyNotes placed beside `results` instead of inside it (kept only when there is one result).
+ * Returns null when the input still doesn't fit, so the loop can hand the error back for a retry.
+ */
+export function readVerdict(input: unknown): VerdictInput | null {
+  const raw = maybeJson(input)
+  if (!raw || typeof raw !== 'object') return null
+  const {results, policyNotes: stray, mode, ...rest} = raw as Record<string, unknown>
+  const list = maybeJson(results)
+  const strayNotes = maybeJson(stray)
+  const repaired = {
+    ...rest,
+    mode: mode === 'explore' ? 'explore' : 'check',
+    results: Array.isArray(list)
+      ? list.map((r) => {
+          if (!r || typeof r !== 'object') return r
+          const notes = maybeJson((r as {policyNotes?: unknown}).policyNotes)
+          return {
+            ...r,
+            policyNotes: Array.isArray(notes) ? notes : list.length === 1 && Array.isArray(strayNotes) ? strayNotes : [],
+          }
+        })
+      : list,
+  }
+  const parsed = verdictInputSchema.safeParse(repaired)
+  return parsed.success ? parsed.data : null
+}
 
 type Options = {
   candidate: Candidate

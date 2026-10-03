@@ -74,3 +74,20 @@ curl -s localhost:3000/api/check -H 'Content-Type: application/json' -d '{
 The request has three parts:
 - `mode`: `check` (one course) or `explore` (courses the candidate may qualify for).
 - `target`: `{programmeId?, programmeName?, institutionIds?}`. A `programmeName` that isn't in the data returns `noDataReason` instead of a guess.
+
+## Web app (Phase 6)
+
+- **`/`** has three one-tap sample candidates and a mobile-first form. Each sample is fictional but checked against a real **verified** requirement: Eligible, At risk (awaiting a NECO result) and "would be rejected at clearance" (two sittings for a one-sitting course). `web/lib/samples.test.ts` proves each verdict against `data/seed.ndjson`.
+- Each result card shows:
+  - the verdict chip, course, university and session
+  - every check, with its reason
+  - the conditions you must check yourself
+  - Knowledge Base policy notes, with links to the original sources and official/secondary badges
+  - the data status, plus the requirement's sources
+- "How I got this answer" lists every tool call, with the GROQ text and the KB paths.
+- **`/about`** covers the architecture, why there are two Context endpoints, live data coverage from GROQ, limitations and links.
+- Accessibility:
+  - every input is labelled
+  - native controls, so everything works from the keyboard
+  - 44px touch targets
+  - no horizontal scroll at 360px, checked for every result type with all panels open

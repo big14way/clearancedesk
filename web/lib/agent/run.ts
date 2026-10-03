@@ -1,5 +1,5 @@
 import {anthropic, type AnthropicLanguageModelOptions} from '@ai-sdk/anthropic'
-import {generateText, hasToolCall, stepCountIs} from 'ai'
+import {generateText, stepCountIs, type StopCondition, type ToolSet} from 'ai'
 import {z} from 'zod'
 import {
   candidateSchema,
@@ -8,10 +8,10 @@ import {
   type Verdict,
   type VerificationStatus,
 } from '@/lib/eligibility/types'
-import {getSubjectNames} from '@/lib/sanity/client'
+import {getSourceLookup, getSubjectNames} from '@/lib/sanity/client'
 import {getInitialContexts, withContextTools} from './mcp'
 import {buildSystemPrompt, buildUserPrompt} from './prompt'
-import {createLocalTools, verdictInputSchema, type Evaluated, type VerdictInput} from './tools'
+import {createLocalTools, readVerdict, type Evaluated, type VerdictInput} from './tools'
 
 export const checkRequestSchema = z
   .object({
@@ -35,7 +35,14 @@ export const checkRequestSchema = z
 
 export type CheckRequest = z.infer<typeof checkRequestSchema>
 
-export type PolicyNote = {text: string; kbPath: string; sourceTitle?: string; sourceUrl?: string}
+export type PolicyNote = {
+  text: string
+  kbPath: string
+  sourceTitle?: string
+  sourceUrl?: string
+  /** Looked up from the source documents by URL; absent when the URL isn't one of ours. */
+  authority?: 'official' | 'secondary'
+}
 
 export type TraceStep = {toolName: string; input: unknown; error?: true}
 
@@ -46,7 +53,8 @@ export type CheckResult = {
   session: string
   /** From the deterministic evaluator; the model never sets it. */
   verdict: Verdict
-  checks: Check[]
+  /** Every check cites the requirement's sources, so those are sent once, in `citations`. */
+  checks: Array<Omit<Check, 'citations'>>
   dataStatus: VerificationStatus
   conflictNote: string | null
   lastVerified: string | null
@@ -97,18 +105,27 @@ function modelOptions(modelId: string) {
 /** Shows the GROQ text and KB paths as sent; submit_verdict is summarised. */
 function traceInput(toolName: string, input: unknown): unknown {
   if (toolName !== 'submit_verdict') return input
-  const parsed = verdictInputSchema.safeParse(input)
-  if (!parsed.success) return {invalid: true}
+  const verdict = readVerdict(input)
+  if (!verdict) return {invalid: true}
   return {
-    requirementIds: parsed.data.results.map((r) => r.requirementId),
-    ...(parsed.data.noDataReason ? {noDataReason: parsed.data.noDataReason} : {}),
+    requirementIds: verdict.results.map((r) => r.requirementId),
+    ...(verdict.noDataReason ? {noDataReason: verdict.noDataReason} : {}),
   }
+}
+
+/**
+ * Stops once submit_verdict carries a usable verdict. A malformed one doesn't stop the loop: the SDK returns the
+ * validation error to the model, which then retries (seen in testing: `results` sent as a JSON string).
+ */
+function usableVerdict<TOOLS extends ToolSet>(): StopCondition<TOOLS> {
+  return ({steps}) =>
+    steps.at(-1)?.toolCalls.some((c) => c.toolName === 'submit_verdict' && readVerdict(c.input) !== null) ?? false
 }
 
 export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal): Promise<CheckResponse> {
   const modelId = process.env.MODEL_ID || 'claude-sonnet-5-5'
   const evaluated = new Map<string, Evaluated>()
-  const [context, names] = await Promise.all([getInitialContexts(), getSubjectNames()])
+  const [context, names, findSource] = await Promise.all([getInitialContexts(), getSubjectNames(), getSourceLookup()])
 
   const steps = await withContextTools(async (contextTools) => {
     const result = await generateText({
@@ -123,7 +140,7 @@ export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal)
         ...contextTools,
         ...createLocalTools({candidate: request.candidate, programmeId: request.target?.programmeId, evaluated}),
       },
-      stopWhen: [stepCountIs(MAX_STEPS), hasToolCall('submit_verdict')],
+      stopWhen: [stepCountIs(MAX_STEPS), usableVerdict()],
       maxOutputTokens: 8000,
       providerOptions: {anthropic: modelOptions(modelId)},
       abortSignal,
@@ -147,10 +164,7 @@ export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal)
         const paths = (call.input as {paths?: unknown})?.paths
         if (Array.isArray(paths)) paths.forEach((p) => typeof p === 'string' && kbPathsRead.add(p))
       }
-      if (call.toolName === 'submit_verdict') {
-        const parsed = verdictInputSchema.safeParse(call.input)
-        if (parsed.success) verdict = parsed.data
-      }
+      if (call.toolName === 'submit_verdict') verdict = readVerdict(call.input) ?? verdict
     }
   }
 
@@ -164,7 +178,7 @@ export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal)
       institution: e.requirement.programme?.institution ?? {},
       session: e.requirement.session,
       verdict: e.result.verdict,
-      checks: e.result.checks,
+      checks: e.result.checks.map(({id, label, status, detail}) => ({id, label, status, detail})),
       dataStatus: e.requirement.verificationStatus,
       conflictNote: e.requirement.conflictNote ?? null,
       lastVerified: e.requirement.lastVerified ?? null,
@@ -174,12 +188,19 @@ export async function runCheck(request: CheckRequest, abortSignal?: AbortSignal)
       // A policy note must point at an entry this run actually read.
       policyNotes: (text?.policyNotes ?? [])
         .filter((n) => kbPathsRead.has(n.kbPath) && n.text.trim())
-        .map((n) => ({
-          text: clip(n.text, 400),
-          kbPath: n.kbPath,
-          ...(n.sourceTitle ? {sourceTitle: clip(n.sourceTitle, 200)} : {}),
-          ...(n.sourceUrl && /^https?:\/\//.test(n.sourceUrl) ? {sourceUrl: n.sourceUrl} : {}),
-        })),
+        .map((n) => {
+          // Prefer our own source document (title, URL, authority) over what the model copied.
+          const source = findSource({url: n.sourceUrl, title: n.sourceTitle})
+          const url = source?.url ?? (n.sourceUrl && /^https?:\/\//.test(n.sourceUrl) ? n.sourceUrl : undefined)
+          const title = source?.title ?? (n.sourceTitle && !/\.(md|pdf)\b/i.test(n.sourceTitle) ? n.sourceTitle : undefined)
+          return {
+            text: clip(n.text, 400),
+            kbPath: n.kbPath,
+            ...(title ? {sourceTitle: clip(title, 200)} : {}),
+            ...(url ? {sourceUrl: url} : {}),
+            ...(source?.authority ? {authority: source.authority} : {}),
+          }
+        }),
     }
   })
 

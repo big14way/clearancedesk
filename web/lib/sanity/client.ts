@@ -18,3 +18,33 @@ export async function getSubjectNames(): Promise<Map<string, string>> {
   subjectNames = {at: Date.now(), names: new Map(rows.map((r) => [r._id, r.name]))}
   return subjectNames.names
 }
+
+export type SourceRef = {title: string; url?: string; authority?: 'official' | 'secondary'}
+
+let sourceIndex: {at: number; byUrl: Map<string, SourceRef>; byId: Map<string, SourceRef>} | null = null
+
+const urlKey = (url: string) => url.trim().replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, '').toLowerCase()
+
+/**
+ * Finds one of our source documents from what a policy note cites: its URL, or the Knowledge Base upload file name
+ * (scripts/build-kb-files.ts names each file after its source id, e.g. "lasu-2026-screening-reopening.md").
+ */
+export async function getSourceLookup(): Promise<(cited: {url?: string | null; title?: string | null}) => SourceRef | undefined> {
+  if (!sourceIndex || Date.now() - sourceIndex.at > 10 * 60_000) {
+    const rows = await sanity.fetch<Array<SourceRef & {_id: string}>>(`*[_type == "source"]{_id, title, url, authority}`)
+    sourceIndex = {
+      at: Date.now(),
+      byUrl: new Map(rows.filter((r) => r.url).map((r) => [urlKey(r.url!), r])),
+      byId: new Map(rows.map((r) => [r._id, r])),
+    }
+  }
+  const {byUrl, byId} = sourceIndex
+  return ({url, title}) => {
+    if (url) {
+      const hit = byUrl.get(urlKey(url))
+      if (hit) return hit
+    }
+    const file = title?.trim().match(/^([a-z0-9-]+)\.(md|pdf)\b/i)?.[1]
+    return file ? byId.get(`source-src-${file.toLowerCase()}`) : undefined
+  }
+}
