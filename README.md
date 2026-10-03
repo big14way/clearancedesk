@@ -34,4 +34,43 @@ npm run build:seed     # data/catalog.yaml + data/sources.yaml → data/seed.ndj
 cd studio && npx sanity dataset import ../data/seed.ndjson production --replace
 ```
 
-Setup steps for the agent and web app are added as later phases land.
+## Agent (Phase 5)
+
+`POST /api/check` runs one agent loop (Vercel AI SDK 6 + Claude Sonnet 5.5) over **two Sanity Context MCP endpoints**:
+
+| Endpoint | Source | Tools the agent gets |
+|---|---|---|
+| `clearance-rules` | dataset `cynv9mfk.production` | `rules_groq_query`, `rules_schema_explorer` |
+| `clearance-policy` | Knowledge Base (32 JAMB/university sources) | `policy_knowledge_base_read`, `policy_knowledge_base_search` |
+
+Both endpoints' `initial_context` is fetched over HTTP and inlined in the system prompt, so the agent starts out knowing the schema and the KB outline. Two local tools are added:
+- `evaluate_eligibility` loads the requirement documents and runs the deterministic evaluator (`web/lib/eligibility`) on the server-held candidate. **The verdict always comes from here.**
+- `submit_verdict` has no `execute`, so calling it ends the loop. The model's headline, explanation and policy notes are merged with the evaluator's results.
+
+The route then applies two guards:
+- A policy note is kept only if its KB path was actually read in that run.
+- In check mode, only the requested programme can be evaluated.
+
+The response also carries a trace: the tool calls in order, with the GROQ text and the KB paths.
+
+Run it locally:
+
+```bash
+cd web && cp .env.example .env.local   # fill SANITY_ORGANIZATION_TOKEN (org token, Context Viewer) and ANTHROPIC_API_KEY
+npm install && npm test && npm run dev
+curl -s localhost:3000/api/check -H 'Content-Type: application/json' -d '{
+  "mode": "check",
+  "target": {"programmeId": "programme-unilag-medicine-and-surgery"},
+  "candidate": {
+    "utme": {"score": 287, "subjects": ["subject-english", "subject-biology", "subject-chemistry", "subject-physics"]},
+    "olevel": {"sittings": [{"exam": "WAEC", "year": 2025, "results": [
+      {"subjectId": "subject-english", "grade": "B3"}, {"subjectId": "subject-mathematics", "grade": "B2"},
+      {"subjectId": "subject-biology", "grade": "B3"}, {"subjectId": "subject-chemistry", "grade": "C4"},
+      {"subjectId": "subject-physics", "grade": "C5"}]}]}
+  }
+}'
+```
+
+The request has three parts:
+- `mode`: `check` (one course) or `explore` (courses the candidate may qualify for).
+- `target`: `{programmeId?, programmeName?, institutionIds?}`. A `programmeName` that isn't in the data returns `noDataReason` instead of a guess.

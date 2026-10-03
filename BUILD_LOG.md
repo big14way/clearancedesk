@@ -128,3 +128,40 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - a smoke test that normalises and evaluates **all 34 real requirements** from `data/seed.ndjson`, with real-data assertions (UNILAG Medicine one sitting, UNILAG CS needs Further Maths, UI Medicine AT_RISK because there's no published minimum, UNN minimum 160)
 - **Mutation check:** made `meets()` strict (C6 no longer meets C6) → 3 tests failed; stopped counting choice-group credits → 3 tests failed. Both restored.
 - Dependency snag: `vitest@5` requires `@types/node` ≥ 22, but create-next-app pinned `^20`. Bumped to `^24` (an LTS line Vercel runs). `vitest.config.mts` avoids Vite's "ESM in CJS" warning.
+
+## 2026-10-03 — Phase 5: the agent
+
+- **Versions checked before writing code** (from the installed packages' `.d.ts` files and bundled docs):
+  - `ai@6.0.300`, `@ai-sdk/mcp@1.0.90` and `@ai-sdk/anthropic@3.0.127`, all on `@ai-sdk/provider@3`.
+  - `generateText` takes `stopWhen: [stepCountIs(12), hasToolCall('submit_verdict')]`.
+  - A tool without `execute` ends the loop.
+  - `system` accepts a message object with `providerOptions.anthropic.cacheControl`.
+- **Initial context inlined.** I followed Sanity's own Next.js reference: `GET <endpoint>/initial-context` with the org token returns the Markdown (rules about 3.8 KB, policy about 3.8 KB).
+  - Both are inlined in the system prompt, cached for 10 minutes per instance.
+  - `initial_context` is not given as a tool, which saves one round-trip per endpoint.
+  - `array_field_reader` is left out too. No requirement array is long enough to be cropped, and its schema is the largest of all the tools.
+- **Guards in code, not just the prompt:**
+  - The candidate lives in the tool's closure, so the model can't edit what it is judged on.
+  - In check mode with a `programmeId`, `evaluate_eligibility` refuses any other programme's requirements.
+  - A policy note survives only if its `kbPath` was read by `policy_knowledge_base_read` in that same run.
+  - Over-long headlines and explanations are trimmed in code rather than rejected by the schema. A schema failure would cost the agent a step.
+  - If the model never calls `submit_verdict`, the evaluator's verdicts are still returned, with plain fallback headlines and `explained: false`.
+- **Snag:** annotating the provider options as `AnthropicLanguageModelOptions` failed `tsc`, because the type includes non-JSON fields and `providerOptions` wants a `JSONObject`. Fixed with `satisfies`, which is the pattern in the provider docs.
+- **Acceptance (local `curl`, `next dev`):**
+  - UNILAG Medicine, two sittings, Physics D7 in WAEC → NOT_ELIGIBLE. Trace: `rules_groq_query → evaluate_eligibility → policy_knowledge_base_read → submit_verdict`.
+  - Explore mode (Maths/Economics/Government, UNILAG + LASU) → 4 requirements, same 4-step trace. 3 are AT_RISK only because their data is `conflicting` (the Phase 4 rule); UNILAG Law is NOT_ELIGIBLE because Maths doesn't count toward its UTME combination.
+  - "Petroleum Engineering" at UNILAG → `noDataReason` naming the 8 UNILAG courses we do hold. Nothing was evaluated.
+  - Invalid bodies → 400 with field-level issues. Non-JSON → 400. No raw errors or tokens reach the client.
+- **Wrong turns caught by reading the outputs:**
+  - **The model added "next steps" from memory.** It said "UTME subjects can't be changed after sitting", which no entry it read says. The prompt now bans procedures from memory and requires the next step to come from the checks or the entries read. It still happened once after the first tweak. After the second, one of two runs still said the combination "cannot be changed in this data": softer, but the same habit. This is only reduced, not solved. Because the rule lives only in the prompt, the Phase 8 eval should keep checking for it.
+  - **Headlines were vague** ("at risk, but your results fit"). They now have to name the verdict's main reason.
+  - **The no-data message echoed the prompt** ("I won't use another course in its place"). Reworded the rule.
+- **Latency:**
+  - At `effort: 'medium'` (with `thinking: between_tools`, Sonnet 5.5's lightest setting), the explore case took 26–52 s. That is too close to the 60 s function limit.
+  - At `effort: 'low'` it took 24–32 s, with text of similar quality, so low is the setting now.
+  - Check mode takes 13–36 s.
+- **Observation, not a bug:**
+  - The KB entry `cut_off_marks/unilag/sciences` calls UNILAG's 83.425 an "aggregate cut-off mark", and the model repeated that faithfully.
+  - Our dataset's manual check is more cautious: the UNILAG release itself doesn't name the scale.
+  - The KB's own overview entry describes UNILAG's aggregate system, so the claim has a source in the KB. I'm noting the difference rather than editing either side.
+- **Unfixed warning:** `next dev`/`next build` warn about two lockfiles (repo root for `scripts/`, plus `web/`). It's harmless locally; I'll revisit at deploy (Phase 7) if Vercel complains.
