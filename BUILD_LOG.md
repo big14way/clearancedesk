@@ -112,3 +112,19 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - `clearance-policy`: Knowledge Base only.
   - **Gotcha:** `clearance-rules` showed "Not ready — No Studio application found for this project/dataset". A deployed *schema* isn't enough; Context's GROQ mode needs a **deployed Studio**. Ran `sanity deploy --url clearance-desk` → https://clearance-desk.sanity.studio, and saved `appId` in `sanity.cli.ts`. The status then read "Ready to connect · Studio: Clearance Desk (default) · Schema: 5 content types".
 - **Token gotcha.** `npm run list-tools` got `-32007 … requires an organization API token with Context access ('sanity.knowledge-base.read')`. The token in `.env.local` is a *project* token. The human must create an **organization** token with Context Viewer (Manage → Organization → API → Tokens).
+
+## 2026-10-03 — Phase 4: deterministic eligibility evaluator
+
+- `web/lib/eligibility/`: `types.ts` (zod candidate schema + requirement/result types), `grades.ts`, `normalize.ts` (stored or GROQ-projected requirement → plain ids), `evaluate.ts`. No model anywhere in this path.
+- **Choice groups use maximum bipartite matching** (Kuhn's algorithm), not the spec's "satisfy each group in order and consume". Greedy in-order assignment can wrongly fail a candidate. Example: group 1 = {Chemistry, Biology}, group 2 = {Chemistry}; a candidate with both satisfies both, but greedy gives Chemistry to group 1. Matching still guarantees a subject never fills two slots. There's a unit test for exactly this case.
+- **Credit total counts every qualifying credit inside a choice group, not only `pick` of them.** The verifier flagged this in Phase 2: "5 at one sitting or 6 at two sittings" (UI) can otherwise never be met at two sittings. With `olevelMinCreditsCombined` it works deterministically. Tested.
+- O'level: non-accepted exams are dropped with a WARN. Awaiting-result sittings are still used, but WARN. All sitting combinations are evaluated; the passing one with the fewest sittings is chosen, otherwise the one with the fewest failures. "This course allows 1 sitting; you need 2 sittings to meet it" is shown when only a larger combination passes.
+- Verdict: any FAIL → NOT_ELIGIBLE, else any WARN → AT_RISK, else ELIGIBLE. `manual` checks always show and never change the verdict. A null institution minimum is a WARN, so UI (which publishes no UTME minimum) can never come out plain ELIGIBLE. That's deliberate honesty.
+- **Tests: 30 passing** (vitest 5). They cover all 12 cases from the spec, plus:
+  - the matching case
+  - `olevelMinCreditsCombined`
+  - choice-group credit counting
+  - candidate validation
+  - a smoke test that normalises and evaluates **all 34 real requirements** from `data/seed.ndjson`, with real-data assertions (UNILAG Medicine one sitting, UNILAG CS needs Further Maths, UI Medicine AT_RISK because there's no published minimum, UNN minimum 160)
+- **Mutation check:** made `meets()` strict (C6 no longer meets C6) → 3 tests failed; stopped counting choice-group credits → 3 tests failed. Both restored.
+- Dependency snag: `vitest@5` requires `@types/node` ≥ 22, but create-next-app pinned `^20`. Bumped to `^24` (an LTS line Vercel runs). `vitest.config.mts` avoids Vite's "ESM in CJS" warning.
