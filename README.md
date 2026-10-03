@@ -57,6 +57,13 @@ The route then applies two guards:
 
 The response also carries a trace: the tool calls in order, with the GROQ text and the KB paths.
 
+The app asks for the response as a stream (NDJSON):
+- each Sanity Context step as it finishes
+- the evaluator's verdicts as soon as they're decided, before the explanation
+- the full result
+
+`POST /api/ask` answers follow-up questions from the Knowledge Base only, e.g. "What is the deadline to upload my O'level result for UNILAG?". It cites the entries it read, and says plainly when the KB doesn't cover the question.
+
 Run it locally:
 
 ```bash
@@ -98,13 +105,21 @@ The request has three parts:
 
 ## Eval (Phase 8)
 
-15 cases. The expected verdicts were set from the original sources by an independent agent that couldn't see our data or code; the evidence is in [`eval/cases.json`](eval/cases.json).
+15 cases. The expected verdicts were set from the original sources by an independent agent that couldn't see our data or code; the evidence is in [`eval/cases.json`](eval/cases.json). Each case runs through Clearance Desk on production, the same model with **Knowledge Base search** over the same content (the keyword-search baseline), and the same model with no tools.
 
-| | Clearance Desk | Same model, no tools |
-|---|---|---|
-| Correct | **13 / 15** | 7 / 15 |
-| Told a failing candidate "Eligible" | **0** | 3 |
-| Verdicts that changed between two identical runs | 1 (a fixed bug) | 5 |
+| Run 4 (run 3 in brackets) | Clearance Desk | + KB search | No tools |
+|---|---|---|---|
+| Correct | **13 / 15** (13) | 6 / 15 (4) | 6 / 15 (8) |
+| Told a failing candidate "Eligible" | **0** (0) | 4 (2) | 3 (4) |
 
-The two misses are deliberate behaviour: conflicting sources always make the verdict "At risk", and a course outside the data gets "no data". Run 1 scored 12/15. It exposed a real data bug, an unsourced exam list for LASU, which is now fixed. Full table: [`eval/results.md`](eval/results.md). Re-run with `npm run eval`.
+Clearance Desk's two misses are deliberate behaviour:
+- conflicting sources always make the verdict "At risk"
+- a course outside the data gets "no data"
+
+The eval also exposed three bugs, all now fixed:
+- an unsourced LASU exam list (data)
+- a rate limiter that counted its own refusals
+- a parser bug in the eval harness
+
+Full table: [`eval/results.md`](eval/results.md). Re-run with `npm run eval` (`--only C01,C02 --systems desk --merge` re-runs part of it).
 

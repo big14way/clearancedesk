@@ -16,7 +16,9 @@ In Nigeria you can score well in JAMB's UTME, get offered admission, and still b
 
 One wrong subject costs a whole year.
 
-**Clearance Desk** is an agent for applicants (and the parents and teachers helping them). It checks your UTME subjects, UTME score and O'level sittings against the *published* 2026/2027 requirements of UNILAG, UI, OAU, UNN and LASU, before you apply. For each course it tells you **Eligible**, **At risk** or **Not eligible**. It explains why in plain English, quotes the admission policy, and links every source.
+**Clearance Desk** is an agent for applicants (and the parents and teachers helping them). It checks your UTME subjects, UTME score and O'level sittings against the *published* 2026/2027 requirements of UNILAG, UI, OAU, UNN and LASU, before you apply.
+- For each course it tells you **Eligible**, **At risk** or **Not eligible**, and explains why in plain English, linking every source.
+- Then you can **ask the Knowledge Base what to do next**: deadlines, screening windows, awaited results. Answers come only from JAMB and university notices.
 
 ![A "Not eligible" verdict: strong UTME, but UNILAG Medicine allows one sitting](https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/post/02-rejected-card-top.png)
 
@@ -24,16 +26,22 @@ The core design rule: **the model finds and explains; deterministic code judges.
 
 ## Demo
 
-**Live: https://clearancedesk.vercel.app**. No login, and it works on a phone. Tap one of the three **sample candidates** at the top to see each verdict in one tap. Each takes 15–40 seconds while the agent works.
+**Live: https://clearancedesk.vercel.app**. No login, and it works on a phone. Tap one of the three **sample candidates** at the top:
+1. You'll watch each Sanity Context step land live.
+2. The verdict appears as soon as the code decides it, usually within 10–15 seconds.
+3. Then the explanation arrives.
+4. Finally, try one of the suggested questions under the result.
 
 <!-- TODO before publishing: upload submission/demo/clearance-desk-demo.mp4 to YouTube (unlisted is fine) and paste its URL here. -->
 {% embed https://www.youtube.com/watch?v=VIDEO_ID %}
 
-In the 84-second video:
+In the two-minute narrated video:
 1. Chioma (UTME 301) checks Medicine at UNILAG and gets **Not eligible**: UNILAG allows one sitting, and her Physics credit is from a second one.
 2. With the *same* results, UNN Nursing (two sittings allowed) gives **Eligible**.
-3. Then "Show courses I qualify for" checks 10 courses at once.
-4. Finally, the "How I got this answer" trace.
+3. "Show courses I qualify for" checks 10 courses at once.
+4. She asks the Knowledge Base for her upload deadline, which turns out to have been extended.
+5. A look at how the Knowledge Base was built, and the trace.
+6. The eval.
 
 ## Code
 
@@ -96,6 +104,8 @@ One loop (Vercel AI SDK 6 + Claude Sonnet 5.5):
 3. **`policy_knowledge_base_read`** reads the KB entries behind each failed or uncertain check, in one call.
 4. **`submit_verdict`** is a tool with no `execute`, so calling it ends the loop. The model's explanation is merged with the evaluator's verdicts.
 
+The route streams the loop as it runs: each Sanity Context step as it finishes, then **the verdict as soon as `evaluate_eligibility` returns**, before the explanation is written. On a phone you watch the rules query and the checks land, and the decided verdict shows up in about half the total time.
+
 Some guarantees are enforced in code, not just in the prompt:
 - a policy note is dropped unless its KB path was actually read in that run
 - check mode can't evaluate a different course
@@ -129,25 +139,50 @@ I wrote 4 instructions by hand:
 
 ![10 instructions: 4 manual, 6 from resolved issues](https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/19-kb-instructions-10-rules.jpg)
 
-### 5. Does the structure actually matter? The eval
+**The Knowledge Base answers questions directly too.** Under every result there's an "Ask about the admission policy" box with suggested questions for that school, such as "What is the deadline to upload my O'level result for UNILAG?". A second agent answers them:
+- It reads KB entries through `clearance-policy` and must cite the paths it read. Citations it didn't read are dropped in code.
+- If the KB doesn't cover the question, it says so ("answered: false") instead of guessing.
+- It gets today's date, so it can say when a deadline has already passed.
 
-I wrote 15 cases full of traps: Further Maths, sittings, UI's "6 credits at two sittings", NABTEB, a UTME score of 196 against minimums of 195 and 200, a course outside the data. An **independent agent that could only read the original source files** set the expected verdict for each, with quoted evidence, and couldn't see my dataset or code. I ran every case through Clearance Desk on production and through **the same model with no tools**. The no-tools model got *more* thinking time.
+![A follow-up answered from the Knowledge Base, with official sources](https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/post/07-followup-phone.png)
 
-| | Clearance Desk | Same model, no tools |
-|---|---|---|
-| Correct | **13 / 15** | 7 / 15 |
-| Told a candidate who fails a published rule "Eligible" | **0** | 3 |
-| Verdicts that changed between two identical runs | 1 (a fixed bug) | 5 |
+Building this exposed a real Knowledge Base problem. Its `post_utme_screening` entry still gives UNILAG's original upload deadline (14 August), even though I resolved that conflict in favour of the extension (24 August), which the `awaiting_results_and_olevel_upload` entry has. The follow-up agent now reads both entries for deadline questions and lets the later notice win, so it answers "extended to 24 August; the earlier date was 14 August".
 
-The no-tools model told three candidates they were fine when they'd be rejected at clearance. It missed UNILAG CS's Further Maths, UNILAG Medicine's one-sitting rule, and UI's six-credit rule.
+### 5. Would keyword search get the same answer? The eval
 
-The eval also caught **my own data bug**. LASU's sources only ever say "SSCE (or equivalent)", but I had encoded that as WAEC/NECO, so a NABTEB candidate was wrongly rejected. Run 1 scored 12/15. I fixed the data, added a regression test, and re-ran.
+The organisers asked exactly this, so I measured it. I wrote 15 cases full of traps:
+- UNILAG Computer Science's Further Maths credit
+- one sitting vs two
+- UI's "6 credits at two sittings"
+- NABTEB results
+- a UTME score of 196 against minimums of 195 and 200
+- a course outside the data
 
-The two remaining misses are deliberate:
-- Clearance Desk marks every requirement with conflicting official sources as "At risk", even when the candidate meets both versions.
+An **independent agent that could only read the original source files** set the expected verdict for each case, with quoted evidence. It couldn't see my dataset or code. Each case then ran through three systems:
+
+- **Clearance Desk** on production.
+- **The same model with Knowledge Base search.** It gets `knowledge_base_search`/`knowledge_base_read` on the *same* Knowledge Base, plus its outline: keyword search over the exact same content.
+- **The same model with no tools.**
+
+Both baselines got *more* thinking time than the agent. Here is run 4; run 3 had the same Clearance Desk score.
+
+| | Clearance Desk | Same model + KB search | Same model, no tools |
+|---|---|---|---|
+| Correct | **13 / 15** (13 in run 3 too) | 6 / 15 (4 in run 3) | 6 / 15 (8 in run 3) |
+| Told a candidate who fails a published rule "Eligible" | **0** (0) | 4 (2) | 3 (4) |
+
+**Keyword search doesn't save the model.** With the KB it searched, read the right entries, even quoted "five credits at one sitting", and still told Chioma (two sittings, UNILAG Medicine) she was eligible. It also missed UNILAG CS's Further Maths and UI's six-credit rule. Reading a rule isn't applying it. Structured rules plus code that applies them is the difference.
+
+The eval also caught three of **my own bugs**, all fixed and logged:
+1. **A data bug:** LASU's sources only ever say "SSCE (or equivalent)", but I had encoded that as WAEC/NECO, so a NABTEB candidate was wrongly rejected. Run 1 scored 12/15 because of it.
+2. **A rate-limiter bug:** it counted its own refusals, so retrying kept extending the lockout.
+3. **A parser bug in the eval harness itself.**
+
+Clearance Desk's two remaining misses are deliberate:
+- It marks every requirement with conflicting official sources "At risk", even when the candidate meets both versions.
 - It says "no data" for a course outside its data instead of guessing.
 
-[Full results and every answer](https://github.com/big14way/clearancedesk/blob/main/eval/results.md)
+[Full results, every answer, and earlier runs](https://github.com/big14way/clearancedesk/blob/main/eval/results.md)
 
 ## Sanity Project Details
 

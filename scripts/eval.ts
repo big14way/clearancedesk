@@ -6,14 +6,16 @@
  *
  * Runs every case in eval/cases.json through
  *   1. Clearance Desk: POST {url}/api/check (the agent with both Context endpoints and the deterministic evaluator)
- *   2. Baseline: the same Claude model with no tools, asked for ELIGIBLE / AT_RISK / NOT_ELIGIBLE / NO_DATA
+ *   2. Keyword-search baseline: the same model and prompt, plus knowledge_base_search/read on the same Knowledge Base
+ *   3. Baseline: the same Claude model with no tools, asked for ELIGIBLE / AT_RISK / NOT_ELIGIBLE / NO_DATA
  * and writes eval/results.md (the table) and eval/results.json (verdicts, reasons, traces, timings).
  * ANTHROPIC_API_KEY and MODEL_ID come from web/.env.local or the environment and are never printed.
  */
 import {readFile, writeFile} from 'node:fs/promises'
 import path from 'node:path'
 import {anthropic} from '@ai-sdk/anthropic'
-import {generateText} from 'ai'
+import {createMCPClient} from '@ai-sdk/mcp'
+import {generateText, stepCountIs} from 'ai'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 const VERDICTS = ['ELIGIBLE', 'AT_RISK', 'NOT_ELIGIBLE', 'NO_DATA'] as const
@@ -136,27 +138,91 @@ Ignore conditions that can't be checked from the results (age, first choice, Pos
 Reply with only a JSON object: {"verdict": "...", "reasons": "two or three sentences"}`
 }
 
-async function runBaseline(modelId: string, c: Case, name: (id: string) => string): Promise<Outcome> {
+// ------------------------------------------------------------------ 3. Keyword-search baseline: same model + Knowledge Base search
+
+const env = (k: string) => {
+  const v = process.env[k]
+  if (!v) throw new Error(`${k} is not set (web/.env.local or the environment)`)
+  return v
+}
+
+async function policyInitialContext(): Promise<string> {
+  const url = new URL(env('CONTEXT_POLICY_MCP_URL'))
+  url.pathname = `${url.pathname.replace(/\/$/, '')}/initial-context`
+  const res = await fetch(url, {headers: {Authorization: `Bearer ${env('SANITY_ORGANIZATION_TOKEN')}`}})
+  if (!res.ok) throw new Error(`initial-context returned ${res.status}`)
+  return res.text()
+}
+
+const KB_SYSTEM = (outline: string) => `${BASELINE_SYSTEM}
+
+You can search and read a Knowledge Base built from JAMB's and the universities' own 2026/2027 admission documents. Look up the requirements there before you answer (knowledge_base_search finds entries by keyword; knowledge_base_read reads them), and answer from what you read.
+
+${outline.trim()}`
+
+/** Same model and prompt as the baseline; with tools=KB it can search and read the Knowledge Base. */
+async function runModel(
+  modelId: string,
+  c: Case,
+  name: (id: string) => string,
+  kb?: {outline: string},
+): Promise<Outcome> {
   const started = Date.now()
+  const client = kb
+    ? await createMCPClient({
+        transport: {type: 'http', url: env('CONTEXT_POLICY_MCP_URL'), headers: {Authorization: `Bearer ${env('SANITY_ORGANIZATION_TOKEN')}`}},
+      })
+    : null
   try {
-    const {text} = await generateText({
+    const all = client ? await client.tools() : {}
+    const tools = Object.fromEntries(Object.entries(all).filter(([k]) => k === 'knowledge_base_search' || k === 'knowledge_base_read'))
+    const {text, steps} = await generateText({
       model: anthropic(modelId),
-      system: BASELINE_SYSTEM,
+      system: kb ? KB_SYSTEM(kb.outline) : BASELINE_SYSTEM,
       prompt: baselinePrompt(c, name),
+      ...(client ? {tools, stopWhen: stepCountIs(10)} : {}),
       maxOutputTokens: 4000,
-      // Generous on purpose: the baseline gets adaptive thinking, which the agent's between-tools setting doesn't.
+      // Generous on purpose: adaptive thinking, which the agent's between-tools setting doesn't get.
       providerOptions: modelId.startsWith('claude-sonnet-5') ? {anthropic: {thinking: {type: 'adaptive'}, effort: 'medium'}} : {},
     })
     const seconds = Math.round((Date.now() - started) / 1000)
-    const json = text.match(/\{[\s\S]*\}/)?.[0]
-    const parsed = json ? (JSON.parse(json) as {verdict?: string; reasons?: string}) : {}
+    const parsed = firstVerdictObject(text)
     const verdict = VERDICTS.find((v) => v === parsed.verdict?.trim().toUpperCase())
+    const extra = client ? {kbCalls: steps.flatMap((s) => s.toolCalls.map((t) => t.toolName))} : undefined
     return verdict
-      ? {verdict, detail: parsed.reasons ?? '', seconds}
-      : {verdict: 'ERROR', detail: `unparseable answer: ${text.slice(0, 160)}`, seconds}
+      ? {verdict, detail: parsed.reasons ?? '', seconds, extra}
+      : {verdict: 'ERROR', detail: `unparseable answer: ${text.slice(0, 160)}`, seconds, extra}
   } catch (e) {
     return {verdict: 'ERROR', detail: (e as Error).message.slice(0, 200), seconds: Math.round((Date.now() - started) / 1000)}
+  } finally {
+    await client?.close()
   }
+}
+
+/** The first balanced {...} in the text that parses as JSON and has a verdict (models sometimes add text after it). */
+function firstVerdictObject(text: string): {verdict?: string; reasons?: string} {
+  for (let i = text.indexOf('{'); i >= 0; i = text.indexOf('{', i + 1)) {
+    let depth = 0
+    let inString = false
+    for (let j = i; j < text.length; j++) {
+      const ch = text[j]
+      if (inString) {
+        if (ch === '\\') j++
+        else if (ch === '"') inString = false
+      } else if (ch === '"') inString = true
+      else if (ch === '{') depth++
+      else if (ch === '}' && --depth === 0) {
+        try {
+          const obj = JSON.parse(text.slice(i, j + 1))
+          if (obj && typeof obj.verdict === 'string') return obj
+        } catch {
+          // not JSON; keep looking
+        }
+        break
+      }
+    }
+  }
+  return {}
 }
 
 // ------------------------------------------------------------------ report
@@ -171,51 +237,61 @@ const LABEL: Record<string, string> = {
 const mark = (got: string, want: string) => (got === want ? '✓' : '✗')
 const cell = (s: string) => s.replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim()
 
-function report(rows: Array<{c: Case; desk: Outcome; base: Outcome}>, meta: {url: string; model: string; date: string}): string {
-  const deskRight = rows.filter((r) => r.desk.verdict === r.c.expected).length
-  const baseRight = rows.filter((r) => r.base.verdict === r.c.expected).length
-  // The costly mistake: telling a candidate who would be rejected that they're fine.
-  const falseGreen = (o: (r: (typeof rows)[number]) => Outcome) =>
-    rows.filter((r) => r.c.expected === 'NOT_ELIGIBLE' && o(r).verdict === 'ELIGIBLE').length
-  const declined = (o: (r: (typeof rows)[number]) => Outcome) =>
-    rows.filter((r) => r.c.expected !== 'NO_DATA' && o(r).verdict === 'NO_DATA').length
-  const median = (xs: number[]) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+type Row = {c: Case; desk: Outcome; kb: Outcome; base: Outcome}
+const SYSTEMS = [
+  ['desk', 'Clearance Desk'],
+  ['kb', 'Same model + Knowledge Base search'],
+  ['base', 'Same model, no tools'],
+] as const
 
-  const lines = [
+function report(rows: Row[], meta: {url: string; model: string; date: string; notes?: string[]}): string {
+  const right = (k: (typeof SYSTEMS)[number][0]) => rows.filter((r) => r[k].verdict === r.c.expected).length
+  // The costly mistake: telling a candidate who would be rejected that they're fine.
+  const falseGreen = (k: (typeof SYSTEMS)[number][0]) =>
+    rows.filter((r) => r.c.expected === 'NOT_ELIGIBLE' && r[k].verdict === 'ELIGIBLE').length
+  const declined = (k: (typeof SYSTEMS)[number][0]) =>
+    rows.filter((r) => r.c.expected !== 'NO_DATA' && r[k].verdict === 'NO_DATA').length
+  const median = (xs: number[]) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+  const v = (o: Outcome, want: string) => `${LABEL[o.verdict]} ${mark(o.verdict, want)}`
+
+  return [
     '# Eval results',
     '',
     `Run ${meta.date} · ${rows.length} cases · model \`${meta.model}\` · Clearance Desk at ${meta.url}`,
     '',
     'Expected verdicts come from `eval/cases.json`. See that file for who set them and the evidence for each.',
     '',
-    '| Case | What it tests | Expected | Clearance Desk | | Baseline (no tools) | |',
-    '|---|---|---|---|---|---|---|',
-    ...rows.map(
-      (r) =>
-        `| ${r.c.id} | ${cell(r.c.title)} | ${LABEL[r.c.expected!]} | ${LABEL[r.desk.verdict]} | ${mark(r.desk.verdict, r.c.expected!)} | ${LABEL[r.base.verdict]} | ${mark(r.base.verdict, r.c.expected!)} |`,
-    ),
+    ...(meta.notes?.length ? [...meta.notes.map((n) => `> ${n}`), ''] : []),
+    '- **Clearance Desk:** the agent, with both Sanity Context endpoints and the deterministic evaluator.',
+    '- **Same model + Knowledge Base search:** the keyword-search baseline. It gets the same prompt, plus `knowledge_base_search`/`knowledge_base_read` on the same Knowledge Base and its outline, but no structured rules and no evaluator.',
+    '- **Same model, no tools:** memory only.',
+    '',
+    '| Case | What it tests | Expected | Clearance Desk | + KB search | No tools |',
+    '|---|---|---|---|---|---|',
+    ...rows.map((r) => `| ${r.c.id} | ${cell(r.c.title)} | ${LABEL[r.c.expected!]} | ${v(r.desk, r.c.expected!)} | ${v(r.kb, r.c.expected!)} | ${v(r.base, r.c.expected!)} |`),
     '',
     '## Totals',
     '',
-    '| | Clearance Desk | Baseline |',
-    '|---|---|---|',
-    `| Correct | **${deskRight} / ${rows.length}** | **${baseRight} / ${rows.length}** |`,
-    `| Said "Eligible" to a candidate who fails a rule | ${falseGreen((r) => r.desk)} | ${falseGreen((r) => r.base)} |`,
-    `| Declined ("no data") instead of answering | ${declined((r) => r.desk)} | ${declined((r) => r.base)} |`,
-    `| Median time | ${median(rows.map((r) => r.desk.seconds))} s | ${median(rows.map((r) => r.base.seconds))} s |`,
+    `| | ${SYSTEMS.map(([, n]) => n).join(' | ')} |`,
+    '|---|---|---|---|',
+    `| Correct | ${SYSTEMS.map(([k]) => `**${right(k)} / ${rows.length}**`).join(' | ')} |`,
+    `| Said "Eligible" to a candidate who fails a rule | ${SYSTEMS.map(([k]) => falseGreen(k)).join(' | ')} |`,
+    `| Declined ("no data") instead of answering | ${SYSTEMS.map(([k]) => declined(k)).join(' | ')} |`,
+    `| Median time | ${SYSTEMS.map(([k]) => `${median(rows.map((r) => r[k].seconds))} s`).join(' | ')} |`,
     '',
     '## Every answer',
     '',
     ...rows.flatMap((r) => [
       `**${r.c.id}: ${r.c.title}.** Expected: ${LABEL[r.c.expected!]}.`,
       '',
-      `- Clearance Desk (${LABEL[r.desk.verdict]} ${mark(r.desk.verdict, r.c.expected!)}): ${cell(r.desk.detail)}`,
-      `- Baseline (${LABEL[r.base.verdict]} ${mark(r.base.verdict, r.c.expected!)}): ${cell(r.base.detail)}`,
+      ...SYSTEMS.map(([k, n]) => `- ${n} (${v(r[k], r.c.expected!)}): ${cell(r[k].detail)}`),
       '',
     ]),
-  ]
-  return lines.join('\n')
+  ].join('\n')
 }
+
+type Key = 'desk' | 'kb' | 'base'
+const JSON_KEY: Record<Key, 'clearanceDesk' | 'kbSearch' | 'baseline'> = {desk: 'clearanceDesk', kb: 'kbSearch', base: 'baseline'}
 
 async function main() {
   await loadEnv()
@@ -223,38 +299,63 @@ async function main() {
   const url = (arg('url') ?? 'https://clearancedesk.vercel.app').replace(/\/$/, '')
   const model = process.env.MODEL_ID || 'claude-sonnet-5-5'
   const only = arg('only')?.split(',')
+  const systems = (arg('systems') ?? 'desk,kb,base').split(',') as Key[]
+  // --merge: re-run only the selected cases/systems and keep every other answer from eval/results.json.
+  const merge = process.argv.includes('--merge')
 
   const {cases} = JSON.parse(await readFile(path.join(ROOT, 'eval/cases.json'), 'utf8')) as {cases: Case[]}
   const selected = cases.filter((c) => !only || only.includes(c.id))
   const missing = selected.filter((c) => !c.expected)
   if (missing.length) throw new Error(`No expected verdict yet for ${missing.map((c) => c.id).join(', ')}`)
+  if (!merge && systems.length < 3) throw new Error('Running only some systems needs --merge')
 
-  const names = await loadNames()
+  const [names, outline] = await Promise.all([loadNames(), policyInitialContext()])
   const name = (id: string) => names.get(id) ?? id
-  console.log(`Running ${selected.length} cases against ${url} and the no-tools baseline (${model})…`)
+  console.log(`Running ${selected.length} cases (${systems.join(', ')}): Clearance Desk at ${url}, model ${model}…`)
 
-  const [desk, base] = await Promise.all([
-    pool(selected, 3, async (c) => {
-      const o = await runClearanceDesk(url, c)
-      console.log(`  desk ${c.id} ${o.verdict.padEnd(12)} ${mark(o.verdict, c.expected!)} ${o.seconds}s`)
-      return o
-    }),
-    pool(selected, 4, async (c) => {
-      const o = await runBaseline(model, c, name)
-      console.log(`  base ${c.id} ${o.verdict.padEnd(12)} ${mark(o.verdict, c.expected!)} ${o.seconds}s`)
-      return o
-    }),
-  ])
+  const log = (who: string) => (c: Case, o: Outcome) => console.log(`  ${who} ${c.id} ${o.verdict.padEnd(12)} ${mark(o.verdict, c.expected!)} ${o.seconds}s`)
+  const runners: Record<Key, (c: Case) => Promise<Outcome>> = {
+    desk: (c) => runClearanceDesk(url, c),
+    kb: (c) => runModel(model, c, name, {outline}),
+    base: (c) => runModel(model, c, name),
+  }
+  const limits: Record<Key, number> = {desk: 3, kb: 3, base: 4}
+  const fresh = Object.fromEntries(
+    await Promise.all(
+      systems.map(async (k) => [k, await pool(selected, limits[k], async (c) => {
+        const o = await runners[k](c)
+        log(k.padEnd(4))(c, o)
+        return o
+      })] as const),
+    ),
+  ) as Partial<Record<Key, Outcome[]>>
 
-  const rows = selected.map((c, i) => ({c, desk: desk[i], base: base[i]}))
+  const previous = merge
+    ? new Map(
+        (JSON.parse(await readFile(path.join(ROOT, 'eval/results.json'), 'utf8')) as {rows: Array<Record<string, unknown> & {id: string}>}).rows.map((r) => [r.id, r]),
+      )
+    : new Map()
+  const rows: Row[] = (merge ? cases : selected).map((c) => {
+    const i = selected.indexOf(c)
+    const pick = (k: Key): Outcome => {
+      const got = i >= 0 ? fresh[k]?.[i] : undefined
+      if (got) return got
+      const old = previous.get(c.id)?.[JSON_KEY[k]] as Outcome | undefined
+      if (!old) throw new Error(`No previous ${k} answer for ${c.id} to merge with`)
+      return old
+    }
+    return {c, desk: pick('desk'), kb: pick('kb'), base: pick('base')}
+  })
+
   const date = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC'
-  await writeFile(path.join(ROOT, 'eval/results.md'), report(rows, {url, model, date}) + '\n')
+  const notes = merge ? [`Merged run: ${systems.join(', ')} re-run for ${selected.map((c) => c.id).join(', ')} on ${date}; every other answer is from the previous run.`] : []
+  await writeFile(path.join(ROOT, 'eval/results.md'), report(rows, {url, model, date, notes}) + '\n')
   await writeFile(
     path.join(ROOT, 'eval/results.json'),
-    JSON.stringify({date, url, model, rows: rows.map((r) => ({id: r.c.id, expected: r.c.expected, clearanceDesk: r.desk, baseline: r.base}))}, null, 2) + '\n',
+    JSON.stringify({date, url, model, notes, rows: rows.map((r) => ({id: r.c.id, expected: r.c.expected, clearanceDesk: r.desk, kbSearch: r.kb, baseline: r.base}))}, null, 2) + '\n',
   )
-  const right = (k: 'desk' | 'base') => rows.filter((r) => r[k].verdict === r.c.expected).length
-  console.log(`\nClearance Desk ${right('desk')}/${rows.length} · baseline ${right('base')}/${rows.length} → eval/results.md`)
+  const right = (k: Key) => rows.filter((r) => r[k].verdict === r.c.expected).length
+  console.log(`\nClearance Desk ${right('desk')}/${rows.length} · + KB search ${right('kb')}/${rows.length} · no tools ${right('base')}/${rows.length} → eval/results.md`)
 }
 
 main().catch((err) => {

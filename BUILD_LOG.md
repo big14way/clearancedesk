@@ -290,3 +290,50 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - The redacted copy drops every image and masks token-shaped strings, `…TOKEN=` values and the email. A re-scan finds 0 matches.
   - A final in-memory check confirmed that none of the current secret values from either `.env.local` appear in it.
 - **Fact-check of the draft against the KB screenshots:** I had written that a KB entry "softened" OAU's English requirement. The screenshots show the opposite: I kept the entry's stricter reading (a credit) over an OAU page's "a pass at O-Level" wording. Corrected in the draft.
+
+## 2026-10-04 — Judge review: closing the gaps
+
+The human asked for the project to be judged honestly against the four criteria, with the gaps fixed. My review found:
+- **Sanity Context / structure:** strong.
+- **Technical:** strong.
+- **Knowledge Base:** the weakest. Excellent setup, but in the product it only added footnotes after the verdict.
+- **Usability:** a 15–40 s spinner, and the video was silent (the human couldn't hear anything because there was no audio track).
+- **The organisers' key line ("if keyword search would get the same answer, aim higher") wasn't directly tested.** The eval compared against a no-tools model, not against search.
+
+What changed:
+- **Live progress and an early verdict.**
+  - `runCheck` now handles each step as it finishes (ai@6 `onStepFinish`).
+  - `/api/check` streams NDJSON when the app asks for it: each step, then the evaluator's verdicts the moment `evaluate_eligibility` returns, then the explained result. The eval and curl still get plain JSON.
+  - Measured locally on the UNILAG Medicine sample: verdict at 11.2 s, full answer at 20.8 s.
+  - The video's contact sheets then exposed a UX bug: on a phone the progress panel sat at the bottom of the screen under the form, because the results area was too short to scroll to the top. While loading, the results area now reserves 85% of the screen height.
+- **Knowledge Base follow-up questions (`/api/ask`, `lib/agent/ask.ts`).**
+  - A second agent answers questions only from KB entries it reads in that run. Citations to entries it didn't read are dropped in code, and an answer with no surviving citation is marked not answered.
+  - It's told today's date, so it can say a deadline has passed.
+  - Three tests: UNILAG Post-UTME dates and LASU awaited results (both answered, with official sources), and UNILAG intake numbers (correctly answered=false).
+- **A real KB problem the follow-ups exposed.** The `post_utme_screening` entry still says UNILAG's upload deadline was 14 August, even though in Phase 3 I resolved that conflict in favour of the 24 August extension. The resolution instruction hasn't reached that entry.
+  - The follow-up prompt now says a later extension notice wins, and to read the upload entry for deadline questions. Re-tested: "extended to 24 August; the earlier date was 14 August", citing both official notices.
+  - The entry itself still needs a KB rebuild in the Context app.
+- **A keyword-search baseline in the eval.** The same model and prompt, plus `knowledge_base_search`/`knowledge_base_read` on the same KB, with its outline in the prompt. That's exactly "keyword search over the content".
+  - Run 3: Clearance Desk 13/15, + KB search 4/15, no tools 8/15.
+  - Run 3 also exposed an eval-harness bug. One KB-search answer had text after its JSON object, and my greedy `{…}` match failed to parse it, scoring an "Error" that wasn't the model's fault. The parser now takes the first balanced JSON object with a `verdict` (tested with braces inside strings, code fences and trailing text). The full eval was re-run as run 4.
+- **Narrated demo video** with the user's `demo-video` skill (edge-tts narration, Pillow captions, ffmpeg).
+  - Phone footage was recorded from a local production build through the DevTools screencast at 780×1688, cut to skip waiting.
+  - Context-app screenshots were cropped 1:1 so they stay readable.
+  - The audio track was checked: AAC, −17 dB mean, loudness-normalised.
+- **Run 4: another real bug, in production.**
+  - Clearance Desk returned "Error" on 6 of 15 cases. They weren't answers: every attempt had been refused with 429 for 15 minutes.
+  - Cause: `overIpLimit` recorded a hit even when it refused the request, so the eval's retries every minute kept the window full forever. A real user hammering "Check" would have locked themselves out the same way.
+  - Fixed: only accepted requests count. A fake-timer test checks that the lockout ends when the original window does, however many retries happen, and that test fails against the old code.
+  - Deployed. Then I re-ran Clearance Desk on just those 6 cases with the new `--systems desk --merge` flags, keeping the other systems' answers.
+- **Final eval (run 4, merged): Clearance Desk 13/15, + KB search 6/15, no tools 6/15.**
+  - False "Eligible": 0 / 4 / 3. Run 3 was 13 / 4 / 8, with 0 / 2 / 4 false "Eligible".
+  - Clearance Desk scored the same in both runs; the baselines moved around.
+  - The KB-search model did search and read the right entries. On C03 it even quoted "five credits at one sitting", then still said Eligible.
+- **Video:** 118.7 s, ten scenes, narrated.
+  - The first footage showed "Checking… 24s" before the first step. That was recorded while the eval loaded the API.
+  - I measured the streams first:
+    - curl: verdict at 6.5–7.7 s
+    - headless browser, local: verdict at about 10 s, with or without the screencast
+    - headless browser, production, with Vercel's Brotli compression: step at 5 s, verdict at 8 s, done at 16 s
+  - So the live progress really does stream through compression. The footage was then re-recorded against production itself.
+  - One test-only snag: the first production probe clicked a sample before React had hydrated, so nothing happened. It now waits for network idle.
