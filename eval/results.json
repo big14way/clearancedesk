@@ -1,0 +1,366 @@
+{
+  "date": "2026-10-03 21:27 UTC",
+  "url": "https://clearancedesk.vercel.app",
+  "model": "claude-sonnet-5-5",
+  "rows": [
+    {
+      "id": "C01",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "ELIGIBLE",
+        "detail": "You meet UNILAG's 2026/2027 Computer Science requirements on subjects, score and O'level.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects (English, Maths, Physics, Chemistry) match. Your 268 is above the 200 minimum. Your WAEC 2025 sitting (one exam round) has 6 credits (C6 or better); 5 are needed. English C5, Maths B2, Further Maths B3, Physics C4 and Chemistry B3 pass. Next: confirm UNILAG was your first choice, you sat the Post-UTME, and your results were on JAMB CAPS by the deadline."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME combination (English, Mathematics, Physics, Chemistry) matches UNILAG's Computer Science requirement. The score of 268 is above the 200 minimum I recall for UNILAG. The single WAEC 2025 sitting has credits in English (C5), Mathematics (B2), Physics (C4), Chemistry (B3) and Further Mathematics (B3), which covers the required five credits including the core subjects. I have not seen the 2026/2027 requirements themselves, so this assumes they are unchanged from earlier sessions.",
+        "seconds": 6
+      }
+    },
+    {
+      "id": "C02",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible: your Further Mathematics grade (E8) is below the C6 needed for UNILAG Computer Science.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For the 2026/2027 session, UNILAG Computer Science needs Further Mathematics at C6 or better (a credit is a grade from A1 to C6). You have E8 in WAEC 2025. Your UTME subjects pass, your score of 268 beats the 200 minimum, and one sitting (one exam attempt) is fine. Next step: ask UNILAG if a Further Maths retake is possible. Also check the manual items, like first choice and Post-UTME."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME combination of English, Mathematics, Physics and Chemistry fits UNILAG's Computer Science requirement. The score of 268 is above UNILAG's published minimum UTME score of 200 for screening. The single WAEC 2025 sitting has credits in English (C5), Mathematics (B2), Physics (C4) and Chemistry (B3), plus Biology, Civic Education and Economics, which meets the five-credit requirement including the core subjects. Note that I am applying the most recently published requirements, not any 2026/2027 update.",
+        "seconds": 7
+      }
+    },
+    {
+      "id": "C03",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible for UNILAG Medicine and Surgery 2026/2027: your O'level results fall short.",
+        "seconds": 13,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "Your UTME subjects (English, Biology, Chemistry, Physics) and score of 301 pass (minimum 200). But UNILAG allows only 1 sitting (one exam seat, e.g. one WAEC) and you used 2. Physics is D7 in WAEC; it needs C6 or better (a credit). You have only 4 credits; you need 5. Your NECO Physics B3 can't be combined. Check with UNILAG about any options."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "UTME subjects (English, Biology, Chemistry, Physics) match the requirement and 301 is well above the published minimum. Across the two sittings (WAEC 2025 and NECO 2025) the candidate has credits in English, Mathematics, Biology, Chemistry and Physics, with the Physics credit (B3) coming from the NECO sitting after a D7 in WAEC. Two sittings are within the permitted limit, so every checkable requirement is met.",
+        "seconds": 6
+      }
+    },
+    {
+      "id": "C04",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "ELIGIBLE",
+        "detail": "You meet UNN Nursing Science's 2026/2027 subject, score and O'level rules, with items to confirm.",
+        "seconds": 13,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects (English, Chemistry, Biology, Physics) match. Your 214 beats UNN's minimum of 160. Two sittings (WAEC and NECO 2025) are allowed. You have 5 credits (a credit is grade C6 or better): English C4, Maths C5, Biology B3, Physics C5 (NECO), Chemistry C6. Next: confirm UNN is your first choice, you are 16 by 30 Sept 2026, and watch unn.edu.ng for the new Post-UTME date."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME subject combination (English, Biology, Chemistry, Physics) is correct. O'level credits in English (C4), Mathematics (C5), Biology (B3) and Chemistry (C6) come from WAEC, and Physics credit (C5) comes from NECO, so all five required credits are met within two sittings. A UTME score of 214 is above the commonly published minimum of about 180 for UNN.",
+        "seconds": 8
+      }
+    },
+    {
+      "id": "C05",
+      "expected": "AT_RISK",
+      "clearanceDesk": {
+        "verdict": "AT_RISK",
+        "detail": "At risk: you meet LASU Nursing Science 2026/2027 on paper, but your NECO result is still awaited.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME score of 231 beats LASU's 195 minimum (the cut-off is the lowest score allowed). Your subjects match. You have 5 credits (C6 or better) and two sittings (separate exam attempts) are allowed. The risk: NECO 2026 is awaiting result, so your Chemistry C5, English C5 and Maths C5 are only expected grades. WAEC Chemistry D7 is not a credit. Next step: upload the NECO result to JAMB CAPS once out."
+        }
+      },
+      "baseline": {
+        "verdict": "AT_RISK",
+        "detail": "The WAEC 2025 sitting gives credits in English (C4), Mathematics (C6), Biology (B3) and Physics (C5), but Chemistry is D7, which is not a credit. The Chemistry credit depends on the NECO 2026 result, which is still awaited (expected C5). If that C5 is confirmed, the two sittings together satisfy the five-credit requirement (English, Mathematics, Biology, Chemistry, Physics). The UTME subject combination is correct, but I can't confirm that 231 clears LASU's Nursing cut-off for 2026/2027.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C06",
+      "expected": "AT_RISK",
+      "clearanceDesk": {
+        "verdict": "AT_RISK",
+        "detail": "At risk: your subjects and O'levels fit, but we can't confirm your 290 UTME score for UI Medicine.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects (English, Physics, Chemistry, Biology) match. Your WAEC 2025 result is one sitting (one exam attempt) with 5 credits (grade C6 or better), so it passes. UI's minimum UTME score isn't in our verified data, so 290 can't be confirmed. Next: check UI's 220 minimum for Medicine, register for Post-UTME (27-29 July 2026), and be 16 by 30 Sept 2026."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME subjects (English, Physics, Chemistry, Biology) match the Medicine and Surgery requirement at UI. The single WAEC 2025 sitting has credits in English (B2), Mathematics (A1), Physics (B3), Chemistry (B2) and Biology (A1), so the five-credit, one-sitting O'level requirement is met. A UTME score of 290 is above the published minimum, though the actual admission cut-off for Medicine is competitive and can change each year.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C07",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible: your UTME score of 196 is below OAU's minimum of 200 for 2026/2027.",
+        "seconds": 12,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, OAU Medicine and Surgery needs at least 200 in UTME (the cut-off is the lowest score allowed). You have 196. Your UTME subjects (English, Physics, Chemistry, Biology) and your WAEC 2025 results (one sitting, 5 credits) all pass. The score is the only fail, and OAU says candidates below 200 can't join Post-UTME. Also check that OAU is your first choice, and confirm with OAU, since its detailed guidelines page couldn't be read."
+        }
+      },
+      "baseline": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "The UTME subjects (English, Physics, Chemistry, Biology) and the O'level credits in English, Mathematics, Physics, Chemistry and Biology at a single WAEC sitting meet OAU's Medicine and Surgery requirements. However, OAU's published minimum UTME score for screening is 200, and the candidate's 196 is below it. This is from my recollection of earlier sessions' OAU screening notices, not a 2026/2027 notice, so it is worth confirming against OAU's current announcement.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C08",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "ELIGIBLE",
+        "detail": "You meet LASU's 2026/2027 Medicine and Surgery requirements on subjects, score and O'level.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects (English, Physics, Chemistry, Biology) match. Your 196 beats LASU's cut-off (minimum score) of 195, but only by 1 mark. Your WAEC 2025 is one sitting (one exam attempt), which Medicine needs. You have 5 credits (C6 or better). Next: confirm LASU is your first choice, you are 16+ by 1 Oct 2026, and your results are on JAMB CAPS."
+        }
+      },
+      "baseline": {
+        "verdict": "AT_RISK",
+        "detail": "The UTME subject combination (English, Physics, Chemistry, Biology) is correct. The WAEC 2025 sitting has credits in English, Mathematics, Physics, Chemistry and Biology, so the O'level requirement is met. However, the 196 UTME score is just below the 200 that I recall as LASU's usual Medicine and Surgery threshold, and I can't confirm the 2026/2027 minimum from official sources, so eligibility is uncertain.",
+        "seconds": 6
+      }
+    },
+    {
+      "id": "C09",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible: you have 5 O'level credits but UI Computer Science needs 6 across two sittings.",
+        "seconds": 15,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For the 2026/2027 session, your UTME subjects (English, Maths, Chemistry, Physics) match. Your WAEC and NECO sittings are allowed (a sitting is one exam attempt). But only 5 results count as credits (C6 or better; a credit is a pass at C6 or higher). Chemistry D7 in WAEC doesn't count. Two sittings need 6. Your 255 score can't be confirmed, as UI's minimum isn't in our verified data. UI's merit cut-off (the lowest score that got in) was 74.125 on an unstated scale. Confirm with UI and sit Post-UTME (27-29 July 2026)."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME subjects (English, Mathematics, Physics, Chemistry) match the Computer Science requirement, and 255 is above the university's published minimum UTME score. Across the two sittings, which UI accepts, the candidate has credits in English (WAEC C5), Mathematics (B3), Physics (C4) and Chemistry (NECO C5, since the WAEC D7 is not a credit). Together with Geography and Civic Education, that gives at least five credits.",
+        "seconds": 7
+      }
+    },
+    {
+      "id": "C10",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible: your UTME has Mathematics, which doesn't count for UNILAG Law (2026/2027).",
+        "seconds": 12,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, UNILAG Law needs English plus three Arts or Social Science subjects. You have English, Literature and Government. Mathematics doesn't count, so you are one subject short. Your UTME score of 271 passes the 200 minimum. Your O'level (one WAEC 2025 sitting, 6 credits) passes. A credit is a grade of C6 or better. Official sources disagree on some rules, so the stricter one was used. Check what you can still change with JAMB or UNILAG."
+        }
+      },
+      "baseline": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "The UTME score of 271 is high, and the O'level results (one WAEC sitting with credits in English, Literature, Government, CRS and Economics) would satisfy the credit requirements for Law. However, the UTME combination is the problem. Law requires Use of English, Literature in English and two other Arts or Social Science subjects. The candidate has only Government as a valid third subject, because Mathematics is not an accepted Law subject, so the combination is invalid. This rests on my recollection of the JAMB/UNILAG subject rules, so please check it against the current brochure.",
+        "seconds": 8
+      }
+    },
+    {
+      "id": "C11",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "ELIGIBLE",
+        "detail": "You meet LASU's 2026/2027 Medicine and Surgery requirements, with a few things to confirm yourself.",
+        "seconds": 13,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects (English, Physics, Chemistry, Biology) match. Your score of 262 beats LASU's cut-off (minimum score) of 195. Your NABTEB 2025 sitting (one exam attempt) is allowed, since Medicine needs one sitting. You have 5 credits (C6 or better). Next: LASU's data only names 'SSCE or equivalent', so confirm with LASU that NABTEB counts. Also confirm LASU is your first choice and you are 16+ by 1 Oct 2026."
+        }
+      },
+      "baseline": {
+        "verdict": "AT_RISK",
+        "detail": "The UTME subjects (English, Physics, Chemistry, Biology) and the O'level credits in English, Mathematics, Physics, Chemistry and Biology in one sitting fit the usual Medicine requirements. However, I can't confirm the 2026/2027 UTME minimum for LASU Medicine against the 262 score, and I can't confirm that NABTEB results are accepted for this course, so eligibility can't be fully confirmed.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C12",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Not eligible for UNILAG Nursing Science 2026/2027: English is D7, and you have only 4 credits.",
+        "seconds": 13,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME subjects and 280 score pass (the minimum is 200). But your WAEC 2025 English is D7, and UNILAG needs C6 or better (a credit is C6 or higher). That leaves 4 credits, and the course needs 5 at one sitting (one exam attempt). UNILAG does not allow combining two sittings. Next step: confirm with UNILAG whether any option exists for you, and check the manual items (first choice, Post-UTME, age 16 by 30 Sept 2026)."
+        }
+      },
+      "baseline": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "Nursing Science at UNILAG requires credit passes (C6 or better) in English Language, Mathematics, Biology, Chemistry and Physics at O'level. The candidate's English Language grade is D7, which is not a credit, so a required subject fails. The UTME subject combination (English, Biology, Chemistry, Physics) is correct, but the English result alone makes the candidate ineligible unless a later sitting gives an English credit.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C13",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "AT_RISK",
+        "detail": "At risk: you meet the rules, but official sources disagree on the extra subjects.",
+        "seconds": 17,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For 2026/2027, your UTME score of 262 beats UNILAG's 200 minimum. Your four UTME subjects fit. Your WAEC 2025 sitting (one sitting) gives 5 credits (a credit is C6 or better), including English C4, Maths B3, Economics B2, Government C5 and Biology C6. JAMB and UNILAG disagree on the extra subjects, so the stricter JAMB rule was used. Next: confirm with UNILAG, upload your results by the deadline and sit the Post-UTME."
+        }
+      },
+      "baseline": {
+        "verdict": "ELIGIBLE",
+        "detail": "The UTME combination (English, Mathematics, Economics, Government) matches the Economics requirement at UNILAG, and 262 is above the published UTME minimum of 200. The single WAEC 2025 sitting has six credits, including English (C4), Mathematics (B3), Economics (B2) and Government (C5), which meets the five-credit requirement with the required subjects. This is based on UNILAG's usual published requirements, since I could not confirm the 2026/2027 brochure.",
+        "seconds": 5
+      }
+    },
+    {
+      "id": "C14",
+      "expected": "NOT_ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "NO_DATA",
+        "detail": "Petroleum Engineering isn't in the data for UNILAG, so I can't check it. I won't guess or use a similar course. The courses held for UNILAG are: Accounting, Computer Science, Economics, Electrical/Electronics Engineering, Law, Mass Communication, Medicine and Surgery, and Nursing Science. Check the official UNILAG admission page for Petroleum Engineering, or pick one of these courses.",
+        "seconds": 6,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "rules_groq_query",
+            "submit_verdict"
+          ]
+        }
+      },
+      "baseline": {
+        "verdict": "AT_RISK",
+        "detail": "The O'level results meet the requirements: credits in English, Mathematics, Physics and Chemistry plus Biology as an additional science subject, all in a single sitting, and the UTME subject combination is correct. A UTME score of 250 clears the general 200 minimum, but UNILAG does not publish a fixed course-specific cut-off for Petroleum and Gas Engineering, and the competitive cut-off is usually higher, so admission can't be confirmed.",
+        "seconds": 7
+      }
+    },
+    {
+      "id": "C15",
+      "expected": "ELIGIBLE",
+      "clearanceDesk": {
+        "verdict": "ELIGIBLE",
+        "detail": "You meet UNN's Medicine and Surgery requirements for 2026/2027, with some things to confirm yourself.",
+        "seconds": 14,
+        "extra": {
+          "explained": true,
+          "trace": [
+            "rules_groq_query",
+            "evaluate_eligibility",
+            "policy_knowledge_base_read",
+            "submit_verdict"
+          ],
+          "explanation": "For the 2026/2027 session, your UTME subjects (English, Physics, Chemistry, Biology) match. Your 165 beats UNN's 160 minimum. Your WAEC 2025 sitting has 5 credits (a credit is a C6 or better) in English C4, Maths B3, Physics C4, Chemistry B3 and Biology B2, all at one sitting. Next: make UNN your first choice, take the Post-UTME (the online test is suspended, so watch unn.edu.ng), and be 16 by 30 Sept 2026."
+        }
+      },
+      "baseline": {
+        "verdict": "NOT_ELIGIBLE",
+        "detail": "The UTME subject combination (English, Physics, Chemistry, Biology) and the O'level credits in English, Mathematics, Physics, Chemistry and Biology in a single WAEC sitting all meet UNN's Medicine and Surgery requirements. However, the UTME score of 165 is below the 200 minimum UNN applies to Medicine and Surgery (and in practice competitive scores are much higher), so the candidate fails the published score requirement.",
+        "seconds": 4
+      }
+    }
+  ]
+}

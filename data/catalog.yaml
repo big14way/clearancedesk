@@ -1016,7 +1016,9 @@ requirements:
 
   # ============================================================== LAGOS STATE UNIVERSITY
   # Institution-wide: UTME ≥ 195; five credits in not more than two sittings except Medicine (one sitting); Engineering
-  # needs six credits at two sittings; English credit compulsory. LASU names only "SSCE (or equivalent)" → WAEC, NECO.
+  # needs six credits at two sittings; English credit compulsory. LASU names no exam body, only "SSCE (or equivalent)",
+  # so every SSCE-level exam is accepted: WAEC, NECO, NABTEB, GCE. (Phase 2 had narrowed this to WAEC/NECO without a
+  # source; the Phase 8 eval caught it.)
   # LASU publishes no list of what counts as "Science" or "Arts/Social Science" subjects; where a rule depends on one,
   # it is a manual check and the requirement stays `unverified` (code cannot fully check it).
   - id: lasu-medicine-and-surgery-2026-2027
@@ -1031,7 +1033,7 @@ requirements:
     olevelChoices: []
     olevelOtherSubjectsCount: false
     olevelMaxSittings: 1
-    olevelAcceptedExams: [WAEC, NECO]
+    olevelAcceptedExams: [WAEC, NECO, NABTEB, GCE]
     specialConditions: [*lasu-conditions]
     citations:
       - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
@@ -1055,7 +1057,7 @@ requirements:
     olevelChoices: []
     olevelOtherSubjectsCount: false
     olevelMaxSittings: 2
-    olevelAcceptedExams: [WAEC, NECO]
+    olevelAcceptedExams: [WAEC, NECO, NABTEB, GCE]
     specialConditions: [*lasu-conditions]
     citations:
       - {source: src-lasu-2026-screening-extension, locator: "para. 1 (closing date 14 July 2026)"}
@@ -1079,7 +1081,7 @@ requirements:
     olevelChoices: []
     olevelOtherSubjectsCount: true
     olevelMaxSittings: 2
-    olevelAcceptedExams: [WAEC, NECO]
+    olevelAcceptedExams: [WAEC, NECO, NABTEB, GCE]
     specialConditions:
       - "Manual check: your fifth O'level credit must be another science subject (JAMB: 'one (1) other Science subject'; LASU's checker names Further Mathematics, Computer Studies or 'Science'). LASU publishes no full list, so this checker cannot confirm it."
       - *lasu-conditions
@@ -1110,7 +1112,7 @@ requirements:
     olevelChoices: []
     olevelOtherSubjectsCount: true
     olevelMaxSittings: 2
-    olevelAcceptedExams: [WAEC, NECO]
+    olevelAcceptedExams: [WAEC, NECO, NABTEB, GCE]
     specialConditions:
       - "Manual check: of your two credits beyond English, Mathematics, Physics and Chemistry, one must be a science subject (the other can be any subject). LASU publishes no list of science subjects, so this checker cannot confirm it."
       - *lasu-conditions
@@ -1141,7 +1143,7 @@ requirements:
     olevelChoices: []
     olevelOtherSubjectsCount: true
     olevelMaxSittings: 2
-    olevelAcceptedExams: [WAEC, NECO]
+    olevelAcceptedExams: [WAEC, NECO, NABTEB, GCE]
     specialConditions:
       - "Manual check: your two other O'level credits should be Arts or Social Science subjects (JAMB's brochure and LASU's 2026 course checker). LASU publishes no list, so this checker cannot confirm them."
       - *lasu-conditions

@@ -316,4 +316,10 @@ describe('real requirements from data/seed.ndjson', () => {
   it('UNN Medicine: 160 is UNN\'s minimum, 150 fails', () => {
     expect(check(evaluate(byId('unn-medicine-and-surgery-2026-2027'), medic([medicSitting()], 150)), 'utme-score')?.status).toBe('fail')
   })
+
+  it('LASU Medicine: LASU says only "SSCE (or equivalent)", so a NABTEB result counts (eval case C11)', () => {
+    const r = evaluate(byId('lasu-medicine-and-surgery-2026-2027'), medic([{...medicSitting(), exam: 'NABTEB'}]))
+    expect(check(r, 'olevel-exams')).toBeUndefined()
+    expect(r.verdict).toBe('ELIGIBLE')
+  })
 })

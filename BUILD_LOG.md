@@ -231,3 +231,43 @@ Honest build journal: what was tried, what broke, how it was fixed. Times are WA
   - Times: 17–40 s with all five running at once.
   - This also confirms both Phase 6 agent fixes end-to-end.
 - **Not done by me:** a tap-through of the production UI. The Chrome extension couldn't drive a background tab while the human's Sanity tab had focus, so I stopped after two failed attempts. The UI was checked locally at 360px in Phase 6, and the API calls behind each button pass on production. The spec's "test from a phone" step is left for the human.
+
+## 2026-10-03 — Phase 8: eval
+
+- **Cases:** `eval/cases.json` holds 15 cases on real programmes.
+  - Pass/fail contrasts: Further Maths at UNILAG CS (C01/C02); one sitting vs two (UNILAG Medicine C03 vs UNN Nursing C04).
+  - Uncertain inputs: an awaited result (C05) and UI's unpublished minimum (C06).
+  - The same UTME 196 at OAU (min 200, C07) and LASU (min 195, C08).
+  - UI's "6 credits at two sittings" (C09); Maths as a Law UTME subject (C10).
+  - NABTEB at LASU (C11); English D7 (C12); a conflicting-source course (C13).
+  - A course not in our data (C14); UNN's 160 minimum (C15).
+- **Who set the expected verdicts:**
+  - The spec says a human does this. I started asking the human case by case. They pointed out that the research was already done, and delegated the step.
+  - So the key was set by an **independent Claude agent that could read only `data/raw/` and `data/sources.yaml`**. It was barred from `catalog.yaml`, the seed, the code and this log, to keep the key from being circular.
+  - It returned 51 official evidence quotes, each checked by script against its raw file.
+  - Before running anything, I reviewed only the four verdicts it marked medium-confidence (C06, C09, C11, C14).
+- **`scripts/eval.ts`:**
+  - Clearance Desk is called through production `/api/check`. On a 429 from the per-IP limit it waits 60 s and retries.
+  - The baseline is the same model, `claude-sonnet-5-5`, with no tools. It gets the same candidate, course names, verdict definitions and the instruction to ignore unchecked conditions.
+  - The baseline is deliberately given *more* thinking than the agent: adaptive thinking at medium effort.
+- **Run 1 (kept as `eval/results-run1.md`): Clearance Desk 12/15, baseline 6/15.**
+  - The baseline said "Eligible" to 4 candidates who fail a published rule: C02 (Further Maths E8), C03 (credits split over two sittings for one-sitting UNILAG Medicine), C09 (5 credits at two sittings at UI) and C14. Clearance Desk did this 0 times.
+  - The baseline was also wrong in the other direction. It called LASU's 195 minimum a fail at 196, and called UNN's 160 minimum and UNN Nursing's two sittings "at risk".
+- **The eval found a real data bug (C11).**
+  - LASU's sources name no exam body, only "SSCE (or equivalent)". In Phase 2 I had encoded that as `[WAEC, NECO]`, so a NABTEB candidate's results were dropped and the verdict was NOT_ELIGIBLE.
+  - That broke rule 1 (never invent data). It had a comment saying where it came from, but no source.
+  - Fixed: all 5 LASU requirements now accept WAEC, NECO, NABTEB and GCE.
+  - Rebuilt the seed and re-imported it, then checked the value through the API CDN.
+  - Added a regression test (47 tests).
+  - The other schools' exam lists do come from their sources: UI says "only WAEC, NECO"; UNILAG names WAEC, NECO, GCE and Cambridge.
+- **Two misses that are not bugs.** Both are reported, and neither was changed to win the case:
+  - **C13 (UNILAG Economics, conflicting sources):** the key says Eligible, because the candidate meets both versions of the rule. Clearance Desk says At risk, because the spec makes every `conflicting` requirement a WARN. Changing that is a product decision, so it's left for the human.
+  - **C14 (Petroleum Engineering):** our data doesn't cover it, so Clearance Desk declines with "no data". The key found UNILAG's "Petroleum & Gas Engineering" in the raw sources, and the candidate lacks Further Maths, so the key says NOT_ELIGIBLE. A decline is counted as a miss.
+- **Run 2 (after the fix; `eval/results.md`): Clearance Desk 13/15, baseline 7/15.**
+  - Clearance Desk said "Eligible" to a failing candidate 0 times; the baseline did it 3 times (C02, C03, C09).
+  - All 15 Clearance Desk answers came with an explanation, and 14 used the full rules → evaluator → policy → verdict path. The 15th is C14, which correctly stopped after finding no data.
+  - Median time was 14 s for Clearance Desk and 6 s for the baseline.
+  - Between runs, Clearance Desk changed only the fixed C11. The baseline changed 5 of 15 verdicts with identical inputs.
+- **Eval-script snag:** run 1's last three cases showed about 5 minutes each. That was the script counting rate-limit waits; it now times only the answered attempt.
+- **Not changed:** C13 and C14, as above. The explanations still sometimes echo the prompt ("I won't guess or use a similar course").
+

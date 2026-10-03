@@ -93,3 +93,16 @@ The request has three parts:
   - native controls, so everything works from the keyboard
   - 44px touch targets
   - no horizontal scroll at 360px, checked for every result type with all panels open
+
+## Eval (Phase 8)
+
+15 cases. The expected verdicts were set from the original sources by an independent agent that couldn't see our data or code; the evidence is in [`eval/cases.json`](eval/cases.json).
+
+| | Clearance Desk | Same model, no tools |
+|---|---|---|
+| Correct | **13 / 15** | 7 / 15 |
+| Told a failing candidate "Eligible" | **0** | 3 |
+| Verdicts that changed between two identical runs | 1 (a fixed bug) | 5 |
+
+The two misses are deliberate behaviour: conflicting sources always make the verdict "At risk", and a course outside the data gets "no data". Run 1 scored 12/15. It exposed a real data bug, an unsourced exam list for LASU, which is now fixed. Full table: [`eval/results.md`](eval/results.md). Re-run with `npm run eval`.
+

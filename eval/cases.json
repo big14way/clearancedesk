@@ -1,0 +1,1273 @@
+{
+  "verdicts": {
+    "ELIGIBLE": "Meets every published requirement that can be checked from the results.",
+    "AT_RISK": "May qualify, but something can't be confirmed: an awaited result, official sources that disagree, or a minimum that isn't published.",
+    "NOT_ELIGIBLE": "Fails at least one published requirement.",
+    "NO_DATA": "The course isn't covered, so no verdict should be given."
+  },
+  "note": "Each expected verdict was set by an independent Claude agent that read only the original sources in data/raw/ (JAMB IBASS data and brochures, the universities own notices and PDFs). It was not allowed to read the catalog, the seed, the app code or the logs. The human delegated this step. Every evidence quote was checked by script against its raw file.",
+  "cases": [
+    {
+      "id": "C01",
+      "title": "UNILAG Computer Science, one WAEC sitting with Further Maths",
+      "tests": "A clean pass, the eligible sample (Ada).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-computer-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 268,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-physics",
+              "subject-chemistry"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-further-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-economics",
+                    "grade": "C5"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNILAG's 2026/2027 notice requires UTME 200+ and five credits at one sitting including English and Mathematics. UNILAG's departmental requirements and JAMB IBASS both require credits in English, Mathematics, Further Mathematics, Physics and Chemistry/Biology, with UTME English, Mathematics, Physics and Chemistry/Biology. UTME 268 and the single WAEC sitting (English C5, Maths B2, Further Maths B3, Physics C4, Chemistry B3) meet every version.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-post-utme-notice.html",
+          "locator": "ELIGIBLE CANDIDATES paragraph (Registrar's notice, June 9, 2026)",
+          "quote": "scored 200 and above are eligible to apply for Post-UTME Online Screening"
+        },
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-post-utme-notice.html",
+          "locator": "ELIGIBLE CANDIDATES paragraph (Registrar's notice, June 9, 2026)",
+          "quote": "candidates must possess five (5) credit passes at one sitting in relevant O/level subjects, including English Language and Mathematics"
+        },
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.23, Faculty of Science, Computer Science row (UTME requirements)",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Further Mathematics, Physics and Chemistry or Biology."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=15030 COMPUTER SCIENCE].subjects",
+          "quote": "English Language, Mathematics, Physics and any of Chemistry or Biology."
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "title": "UNILAG Computer Science, Further Maths E8",
+      "tests": "Further Maths is a compulsory O'level credit for UNILAG CS, which general advice often misses.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-computer-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 268,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-physics",
+              "subject-chemistry"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-further-mathematics",
+                    "grade": "E8"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-economics",
+                    "grade": "C5"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNILAG Computer Science requires an O'level credit in Further Mathematics in every official version: UNILAG's own requirements, the JAMB IBASS UNILAG record, and the JAMB Sciences brochure LAGOS remark. Further Maths E8 is not a credit, and with one sitting no other result can supply it.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.23, Faculty of Science, Computer Science row",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Further Mathematics, Physics and Chemistry or Biology."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=15030 COMPUTER SCIENCE].utme_requirements",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Further Mathematics, Physics and Chemistry or Biology."
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-sciences2.pdf",
+          "locator": "PDF p.184 (printed 635), Computer Science remarks (iii) LAGOS",
+          "quote": "Candidates must have Further Mathematics at 'O' level."
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "title": "UNILAG Medicine, Physics credit only in a second sitting",
+      "tests": "One-sitting rule. UTME is strong (301); the sample that would be rejected at clearance (Chioma).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 301,
+            "subjects": [
+              "subject-english",
+              "subject-biology",
+              "subject-chemistry",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "D7"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-yoruba",
+                    "grade": "B3"
+                  }
+                ]
+              },
+              {
+                "exam": "NECO",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNILAG requires the five O'level credits at ONE sitting (2026/2027 notice and JAMB's specific entry requirements for UNILAG). Medicine needs English, Mathematics, Biology, Chemistry and Physics. The WAEC sitting has Physics D7, and the NECO sitting has no Biology or Chemistry, so no single sitting meets the rule. No official source allows two sittings for UNILAG.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-post-utme-notice.html",
+          "locator": "ELIGIBLE CANDIDATES paragraph (Registrar's notice, June 9, 2026)",
+          "quote": "candidates must possess five (5) credit passes at one sitting in relevant O/level subjects, including English Language and Mathematics"
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-specificEntry.pdf",
+          "locator": "PDF p.3, 2.2.03 University of Lagos (i)",
+          "quote": "possess at least five (5) SSC Credit passes in relevant subjects at one sitting including Mathematics and English Language"
+        },
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.7, Faculty of Clinical Sciences, Medicine & Surgery row",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Biology, Chemistry and Physics."
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "title": "UNN Nursing, Physics credit only in a second sitting",
+      "tests": "Same two-sitting pattern as C03, but UNN Nursing allows two sittings.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unn-nursing-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 214,
+            "subjects": [
+              "subject-english",
+              "subject-chemistry",
+              "subject-biology",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "E8"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              },
+              {
+                "exam": "NECO",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "C6"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNN's 2026/2027 notice sets UTME 160+ (214 passes) and accepts double-sitting results. UNN Nursing (department page, JAMB brochure) requires credits in English, Mathematics, Biology, Physics and Chemistry in not more than two sittings. WAEC (English C4, Maths C5, Biology B3, Chemistry C6) plus NECO Physics C5 meets this, and the UTME subjects match.",
+      "evidence": [
+        {
+          "file": "data/raw/unn/unn-2026-2027-screening-exercise-for-admission.html",
+          "locator": "Registrar's notice, opening paragraph",
+          "quote": "made UNN their first-choice institution in the 2026 Unified Tertiary Matriculation Examination (UTME) and scored 160 and above"
+        },
+        {
+          "file": "data/raw/unn/unn-2026-2027-screening-exercise-for-admission.html",
+          "locator": "Process flow, O/Level entry fields",
+          "quote": "O/Level 2 (For double sitting candidates)"
+        },
+        {
+          "file": "data/raw/unn/unn-nursing-admission-requirement.html",
+          "locator": "Admission Requirement, UTME paragraph",
+          "quote": "credit passes in at least five subjects including English Language, Mathematics, Biology, Physics and Chemistry in not more than two sittings"
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-medical2.pdf",
+          "locator": "PDF p.27 (printed 454), Nursing UTME remarks (v)",
+          "quote": "UNN requires '0' level credit passes or its equivalent at not more than two (2) sittings."
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "title": "LASU Nursing, Chemistry credit from an awaited NECO result",
+      "tests": "Awaiting result (the at-risk sample, Tunde).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-lasu-nursing-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 231,
+            "subjects": [
+              "subject-english",
+              "subject-biology",
+              "subject-chemistry",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "D7"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-yoruba",
+                    "grade": "B2"
+                  }
+                ]
+              },
+              {
+                "exam": "NECO",
+                "year": 2026,
+                "awaitingResult": true,
+                "results": [
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "C5"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "AT_RISK",
+      "confidence": "high",
+      "reasoning": "LASU's 2026/2027 minimum is UTME 195 (231 passes), and Nursing allows up to two sittings with credits in English, Mathematics, Physics, Chemistry and Biology. WAEC Chemistry is D7, so eligibility depends on the awaited NECO 2026 Chemistry credit (expected C5). LASU reopened screening for candidates with awaiting results. The exam must not be taken after July 2026.",
+      "evidence": [
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "2.0 Eligibility for Screening",
+          "quote": "have scored a minimum of 195 marks are eligible to participate in the Online Admission Screening Exercise"
+        },
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "Step III, O'Level requirements",
+          "quote": "at not more than Two (2) sittings, except Medicine and Dentistry that require ONLY one (1) sitting"
+        },
+        {
+          "file": "data/raw/jamb-ibass/lasu.json",
+          "locator": "programmes[id=15298 NURSING/NURSING SCIENCE].utme_requirements",
+          "quote": "credit passes including Mathematics, Physics, Chemistry, Biology and English Language at not more than two sittings."
+        },
+        {
+          "file": "data/raw/lasu/lasu-news-660-2026-2027-screening-portal-reopening-awaiting-results-2026-08-06.html",
+          "locator": "Reopening notice, 06 Aug 2026",
+          "quote": "to enable candidates with awaiting results, whose O'Level results have now been released, to register and upload them."
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "title": "UI Medicine, strong single sitting, UTME 290",
+      "tests": "UI publishes no UTME minimum for 2026/2027.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-ui-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 290,
+            "subjects": [
+              "subject-english",
+              "subject-physics",
+              "subject-chemistry",
+              "subject-biology"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B2"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "AT_RISK",
+      "confidence": "medium",
+      "reasoning": "Every checkable requirement is met: one sitting with credits in English, Maths, Physics, Chemistry and Biology, and the UTME subjects match. But UI has published no 2026/2027 minimum UTME score. Its notice gives none, and its cut-off list has only unexplained aggregate marks. Only JAMB's national floor of 150 exists, which 290 clears. Under the stated rule an unpublished minimum gives AT_RISK. If JAMB's 150 is taken as the operative minimum, the answer would be ELIGIBLE.",
+      "evidence": [
+        {
+          "file": "data/raw/ui/ui-2026-post-utme-de-screening-advert.html",
+          "locator": "3. General Information",
+          "quote": "College of Medicine and Faculty of Pharmacy must possess five (5) credits at one sitting in relevant O level subjects"
+        },
+        {
+          "file": "data/raw/ui/ui-regulation-utme-olevel-requirements.pdf",
+          "locator": "PDF p.14, College of Medicine, Medicine & Surgery row",
+          "quote": "IBADAN accepts 5 credit passes at one sitting in English Language, Mathematics, Chemistry, Physics and Biology."
+        },
+        {
+          "file": "data/raw/ui/ui-2026-27-admission-cutoff-marks.pdf",
+          "locator": "PDF p.1, header and College of Medicine rows",
+          "quote": "2026/2027 ADMISSION EXERCISE: CUT OFF MARKS Faculty Programme Merit Catch ELDS"
+        },
+        {
+          "file": "data/raw/jamb/jamb-homepage-2026-10-03.html",
+          "locator": "homepage notice on the 2026 Policy Meeting",
+          "quote": "The 2026 Policy Meeting has approved the following minimum tolerable admission scores: - Universities: 150"
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "title": "OAU Medicine, UTME 196",
+      "tests": "Score just under OAU's published minimum (200).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-oau-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 196,
+            "subjects": [
+              "subject-english",
+              "subject-physics",
+              "subject-chemistry",
+              "subject-biology"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "OAU's 2026 screening notice admits to screening only candidates who made OAU first choice and scored 200 or more in the 2026 UTME. A UTME score of 196 is below that minimum. The O'level results would otherwise meet the Medicine requirement.",
+      "evidence": [
+        {
+          "file": "data/raw/oau/oau-2026-admission-screening-exercise.html",
+          "locator": "2026 Admission Screening Exercise notice, opening paragraph",
+          "quote": "their first choice in the 2026 UTME and scored 200 and above"
+        },
+        {
+          "file": "data/raw/jamb-ibass/oau.json",
+          "locator": "programmes[id=18019 MEDICINE & SURGERY].utme_requirements",
+          "quote": "Five (5) SSC credit passes in English Language, Mathematics, Physics, Chemistry and Biology."
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "title": "LASU Medicine, UTME 196",
+      "tests": "The same 196 against LASU's published minimum (195).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-lasu-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 196,
+            "subjects": [
+              "subject-english",
+              "subject-physics",
+              "subject-chemistry",
+              "subject-biology"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "LASU's 2026/2027 minimum is UTME 195, so 196 qualifies. Medicine needs credits in Physics, Chemistry, Biology, Mathematics and English at one sitting, and the single WAEC sitting has all five (English B3, Maths B2, Physics C4, Chemistry B3, Biology B2). The UTME subjects (English, Physics, Chemistry, Biology) match.",
+      "evidence": [
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "2.0 Eligibility for Screening",
+          "quote": "have scored a minimum of 195 marks are eligible to participate in the Online Admission Screening Exercise"
+        },
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "Step III, O'Level requirements",
+          "quote": "at not more than Two (2) sittings, except Medicine and Dentistry that require ONLY one (1) sitting"
+        },
+        {
+          "file": "data/raw/jamb-ibass/lasu.json",
+          "locator": "programmes[id=15301 MEDICINE & SURGERY].utme_requirements",
+          "quote": "credit pass in each of the following: Physics, Chemistry, Biology, Mathematics and English language"
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "title": "UI Computer Science, 5 credits across two sittings",
+      "tests": "UI asks for 5 credits at one sitting or 6 at two sittings.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-ui-computer-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 255,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-chemistry",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-geography",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "D7"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B2"
+                  }
+                ]
+              },
+              {
+                "exam": "NECO",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C6"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "medium",
+      "reasoning": "UI Computer Science needs 5 credits at one sitting, or 6 at two sittings including English, Maths, Chemistry, Physics and one other science. WAEC alone fails (Chemistry D7), so the six-credit two-sitting rule applies, and UI's 2026 notice says those six must be in relevant subjects. Relevant credits are English, Maths, Physics, Geography (a UI science) and NECO Chemistry, only five. Civic Education is not on UI's Senate-approved list of matriculating subjects. If Civic were counted, the result would still be only AT_RISK, because UI publishes no 2026/27 UTME minimum.",
+      "evidence": [
+        {
+          "file": "data/raw/ui/ui-regulation-utme-olevel-requirements.pdf",
+          "locator": "PDF p.5, Computing, Computer Science row (O'Level)",
+          "quote": "6 'O' level subjects at 2 sittings to include English Language, Mathematics, Chemistry, Physics and one other Science subjects (excluding Agricultural Science)"
+        },
+        {
+          "file": "data/raw/ui/ui-2026-post-utme-de-screening-advert.html",
+          "locator": "3. General Information",
+          "quote": "For other programmes, candidates presenting two O level results must have at least six (6) credits in relevant subjects."
+        },
+        {
+          "file": "data/raw/ui/ui-list-of-matriculating-subjects.pdf",
+          "locator": "PDF p.1, list of 27 subjects (no Civic Education)",
+          "quote": "The matriculating subjects, as approved by the University Senate, are as follows"
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "title": "UNILAG Law with Mathematics as a UTME subject",
+      "tests": "Law takes English plus three Arts/Social Science UTME subjects; Mathematics is not one.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-law"
+        },
+        "candidate": {
+          "utme": {
+            "score": 271,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-literature-in-english",
+              "subject-government"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-literature-in-english",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-government",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-crs",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-economics",
+                    "grade": "C5"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNILAG Law requires UTME English plus any three Arts or Social Science subjects (UNILAG requirements, IBASS, JAMB Law brochure). JAMB's UNILAG subject lists put Mathematics under Science, so English/Maths/Literature/Government has only two valid subjects. The O'level results (English, Maths, Literature, Government, CRS) and UTME 271 would pass, but the UTME combination fails.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.18, Faculty of Law, Law row (UTME subjects)",
+          "quote": "English Language and any three Arts or Social Sciences subjects."
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-law2.pdf",
+          "locator": "PDF p.10 (printed 427), Law UTME SUBJECTS remark (v)",
+          "quote": "LAGOS requires English Language and any three Arts or Social Sciences subjects."
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-specificEntry.pdf",
+          "locator": "PDF p.4, 2.2.03 UNILAG III (b) Approved Science Subjects",
+          "quote": "(b) Approved Science Subjects Agricultural Science Mathematics Biology Physics"
+        }
+      ]
+    },
+    {
+      "id": "C11",
+      "title": "LASU Medicine with a NABTEB result",
+      "tests": "LASU lists only WAEC and NECO for this course.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-lasu-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 262,
+            "subjects": [
+              "subject-english",
+              "subject-physics",
+              "subject-chemistry",
+              "subject-biology"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "NABTEB",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "medium",
+      "reasoning": "LASU's minimum is UTME 195 (262 passes). Medicine needs credits in Physics, Chemistry, Biology, Mathematics and English at the SSC or its equivalent at one sitting, and the single NABTEB sitting has all five. LASU screens on 'SSCE (or equivalent)' grades, and no LASU or JAMB source excludes NABTEB. Confidence is medium because LASU never names NABTEB.",
+      "evidence": [
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "2.0 Eligibility for Screening",
+          "quote": "have scored a minimum of 195 marks are eligible to participate in the Online Admission Screening Exercise"
+        },
+        {
+          "file": "data/raw/jamb-ibass/lasu.json",
+          "locator": "programmes[id=15301 MEDICINE & SURGERY].utme_requirements",
+          "quote": "at the Senior Secondary Certificate (SSC) or their equivalents at one sitting"
+        },
+        {
+          "file": "data/raw/lasu/lasu-news-642-2026-2027-utme-de-screening-announcement-2026-06-01.html",
+          "locator": "Online Screening Grading for all candidates",
+          "quote": "using the UTME Score and SSCE (or equivalent) grades in Five (5) BEST RELEVANT subjects"
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "title": "UNILAG Nursing, English D7",
+      "tests": "English is a compulsory O'level credit; everything else is strong.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-nursing-science"
+        },
+        "candidate": {
+          "utme": {
+            "score": 280,
+            "subjects": [
+              "subject-english",
+              "subject-biology",
+              "subject-chemistry",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "D7"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "A1"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "A1"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNILAG requires an English Language credit (2026/2027 notice, and Nursing's five required credits). English D7 in the only sitting is not a credit, so the candidate fails despite strong science grades and UTME 280.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-post-utme-notice.html",
+          "locator": "ELIGIBLE CANDIDATES paragraph (Registrar's notice, June 9, 2026)",
+          "quote": "candidates must possess five (5) credit passes at one sitting in relevant O/level subjects, including English Language and Mathematics"
+        },
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.7, Faculty of Clinical Sciences, Nursing row",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Biology, Chemistry and Physics."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=14980 NURSING SCIENCE].utme_requirements",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Biology, Chemistry and Physics."
+        }
+      ]
+    },
+    {
+      "id": "C13",
+      "title": "UNILAG Economics, clean candidate",
+      "tests": "Official sources disagree on the subject lists for this course.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unilag-economics"
+        },
+        "candidate": {
+          "utme": {
+            "score": 262,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-economics",
+              "subject-government"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-economics",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-government",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "C6"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UTME 262 meets UNILAG's 200 minimum. The UTME subjects (English, Maths, Economics, Government) fit 'any one from Biology, Financial Accounting, Geography and Government'. The single WAEC sitting has credits in English, Maths and Economics plus Government and Biology, two from the allowed list.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-post-utme-notice.html",
+          "locator": "ELIGIBLE CANDIDATES paragraph (Registrar's notice, June 9, 2026)",
+          "quote": "scored 200 and above are eligible to apply for Post-UTME Online Screening"
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=14978 ECONOMICS].subjects",
+          "quote": "English, Mathematics , Economics and any one subject from Biology, Financial Accounting, Geography and Government."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=14978 ECONOMICS].utme_requirements",
+          "quote": "Mathematics , Economics and any two subjects from: Biology, Financial Accounting, Geography and Government."
+        },
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.25, Faculty of Social Sciences, Economics row",
+          "quote": "Five 'O' Level credit passes in English Language, Mathematics, Economics and any other two subjects."
+        }
+      ]
+    },
+    {
+      "id": "C14",
+      "title": "UNILAG Petroleum Engineering",
+      "tests": "A course not in the data: the right answer is to say so, not to guess.",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeName": "Petroleum Engineering",
+          "institutionIds": [
+            "institution-unilag"
+          ]
+        },
+        "candidate": {
+          "utme": {
+            "score": 250,
+            "subjects": [
+              "subject-english",
+              "subject-mathematics",
+              "subject-chemistry",
+              "subject-physics"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C5"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "C6"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "NOT_ELIGIBLE",
+      "confidence": "medium",
+      "reasoning": "The sources do cover UNILAG's petroleum programme, under the name Petroleum & Gas Engineering. It appears in UNILAG's requirements, IBASS id 15049 and UNILAG's 2026/27 merit cut-offs. It requires a Further Mathematics credit (UNILAG, IBASS, JAMB engineering brochure), and this candidate has none. Read literally, JAMB's separate 'Petroleum Engineering' programme does not list UNILAG, so the answer would be NO_DATA.",
+      "evidence": [
+        {
+          "file": "data/raw/unilag/unilag-2025-2026-admission-requirements.pdf",
+          "locator": "PDF p.16, Faculty of Engineering, Petroleum & Gas Engineering row",
+          "quote": "Five O/Level credit passes in English Language, Mathematics, Further Mathematics, Physics and Chemistry."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unilag.json",
+          "locator": "programmes[id=15049 PETROLEUM AND GAS ENGINEERING].utme_requirements",
+          "quote": "Five O/Level credit passes in English, Mathematics, Further Mathematics, Physics and Chemistry."
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-engineering2.pdf",
+          "locator": "PDF p.42 (printed 377), Petroleum and Gas Engineering UTME remark (v)",
+          "quote": "OAUSTECH and LAGOS requires 'O' Level credit pass in Further Mathematics."
+        },
+        {
+          "file": "data/raw/unilag/unilag-2026-2027-utme-merit-cut-off-marks.html",
+          "locator": "2026/2027 merit cut-off table, Engineering",
+          "quote": "PETROLEUM & GAS ENGINEERING 75.025"
+        }
+      ]
+    },
+    {
+      "id": "C15",
+      "title": "UNN Medicine, UTME 165",
+      "tests": "A score below most schools' 200 but above UNN's published minimum (160).",
+      "request": {
+        "mode": "check",
+        "target": {
+          "programmeId": "programme-unn-medicine-and-surgery"
+        },
+        "candidate": {
+          "utme": {
+            "score": 165,
+            "subjects": [
+              "subject-english",
+              "subject-physics",
+              "subject-chemistry",
+              "subject-biology"
+            ]
+          },
+          "olevel": {
+            "sittings": [
+              {
+                "exam": "WAEC",
+                "year": 2025,
+                "results": [
+                  {
+                    "subjectId": "subject-english",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-mathematics",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-physics",
+                    "grade": "C4"
+                  },
+                  {
+                    "subjectId": "subject-chemistry",
+                    "grade": "B3"
+                  },
+                  {
+                    "subjectId": "subject-biology",
+                    "grade": "B2"
+                  },
+                  {
+                    "subjectId": "subject-civic-education",
+                    "grade": "B3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "expected": "ELIGIBLE",
+      "confidence": "high",
+      "reasoning": "UNN's 2026/2027 notice sets the minimum at UTME 160, so 165 qualifies. MB,BS needs credits in English, Physics, Chemistry, Biology and Mathematics at one sitting, and the single WAEC sitting has all five. The UTME subjects match. UNN has published no departmental UTME cut-offs; the higher figures on blogs are not official.",
+      "evidence": [
+        {
+          "file": "data/raw/unn/unn-2026-2027-screening-exercise-for-admission.html",
+          "locator": "Registrar's notice, opening paragraph",
+          "quote": "made UNN their first-choice institution in the 2026 Unified Tertiary Matriculation Examination (UTME) and scored 160 and above"
+        },
+        {
+          "file": "data/raw/unn/unn-calendar-2016-2018-full-document.pdf",
+          "locator": "PDF p.667, Faculty of Medicine, M.B., B.S. Admission Requirement",
+          "quote": "expected to have credit passes in English Language, Physics, Chemistry, Biology and Mathematics"
+        },
+        {
+          "file": "data/raw/jamb/jamb-brochure-medical2.pdf",
+          "locator": "PDF p.42 (printed 469), Medicine and Surgery UTME remark (v)",
+          "quote": "UNN requirements should be at one (1) sitting."
+        },
+        {
+          "file": "data/raw/jamb-ibass/unn.json",
+          "locator": "programmes[id=22046 MEDICINE & SURGERY].utme_requirements",
+          "quote": "Five (5) SSC credit passes in English Language, Mathematics, Physics, Chemistry and Biology."
+        }
+      ]
+    }
+  ]
+}

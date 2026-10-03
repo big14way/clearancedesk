@@ -6,14 +6,18 @@
     "fetch:jamb": "tsx scripts/fetch-jamb-brochure.ts",
     "build:seed": "tsx scripts/build-ndjson.ts",
     "build:kb": "tsx scripts/build-kb-files.ts",
-    "list-tools": "tsx scripts/list-tools.ts"
+    "list-tools": "tsx scripts/list-tools.ts",
+    "eval": "tsx scripts/eval.ts"
   },
   "devDependencies": {
+    "@ai-sdk/anthropic": "^3.0.127",
     "@types/node": "^22",
+    "ai": "^6.0.300",
     "node-html-parser": "^9.0.4",
     "tsx": "^4",
     "typescript": "^5",
     "unpdf": "^1.8.1",
-    "yaml": "^2"
+    "yaml": "^2",
+    "zod": "^4.6.5"
   }
 }
