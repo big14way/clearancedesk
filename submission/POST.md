@@ -1,6 +1,6 @@
 ---
 title: "Clearance Desk: an agent that catches the admission you'd lose at clearance"
-published: false
+published: true
 tags: devchallenge, sanitychallenge, sanity, ai
 cover_image: https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/post/00-cover.png
 ---
@@ -32,8 +32,7 @@ The core design rule: **the model finds and explains; deterministic code judges.
 3. Then the explanation arrives.
 4. Finally, try one of the suggested questions under the result.
 
-<!-- TODO before publishing: upload submission/demo/clearance-desk-demo.mp4 to YouTube (unlisted is fine) and paste its URL here. -->
-{% embed https://www.youtube.com/watch?v=VIDEO_ID %}
+{% embed https://youtu.be/xm8uXu6VgaY %}
 
 In the two-minute narrated video:
 1. Chioma (UTME 301) checks Medicine at UNILAG and gets **Not eligible**: UNILAG allows one sitting, and her Physics credit is from a second one.
@@ -50,7 +49,7 @@ In the two-minute narrated video:
 The repo has:
 - the Studio schema
 - the source-traced data pipeline
-- the evaluator, with 47 unit tests
+- the evaluator, with 49 unit tests
 - the agent and the Next.js app
 - the eval
 - an honest [build log](https://github.com/big14way/clearancedesk/blob/main/BUILD_LOG.md) of every wrong turn
@@ -202,9 +201,7 @@ The whole thing was built with Claude Code, phase by phase. That covered:
 - the evaluator and the agent
 - the UI, the deploy and the eval
 
-The most interesting slice is the eval run that caught my LASU data bug, plus the guard that stops the model's malformed final answers from losing the explanation.
-
-<!-- TODO before publishing: upload submission/agent-session/clearance-desk-session.redacted.jsonl at https://dev.to/agent_sessions/new, click "Make Public", and paste the embed here. -->
+Every wrong turn, and how it was fixed, is in the [build log](https://github.com/big14way/clearancedesk/blob/main/BUILD_LOG.md). The best moments are when the eval caught my own LASU data bug, and when the follow-up questions exposed a stale date in the Knowledge Base.
 
 ## Limitations
 

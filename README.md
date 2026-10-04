@@ -6,6 +6,8 @@ Built for the DEV × Sanity Challenge, Path One: "Ship an Agent That Queries Rea
 
 **Live:** https://clearancedesk.vercel.app (no login). The About page shows the architecture and live data coverage.
 
+**Submission post:** https://dev.to/big14way/clearance-desk-an-agent-that-catches-the-admission-youd-lose-at-clearance-36e8 · **Demo video (2 min):** https://youtu.be/xm8uXu6VgaY
+
 ![Architecture: one agent, two Sanity Context endpoints, one deterministic evaluator](submission/screenshots/post/05-architecture.png)
 
 **Core principle: the model finds and explains; deterministic code judges.**

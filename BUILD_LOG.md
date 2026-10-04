@@ -343,3 +343,15 @@ What changed:
   - The rebuilt entry reads "Monday, 24 August 2026 (extended from the original Friday, 14 August 2026)".
   - Checked through the MCP endpoint: all 13 key facts across the five universities survived the rebuild, and no new issues appeared. The instructions are now 11 (5 manual, 6 from resolved issues).
   - The live `/api/ask` now gets the same date from both entries.
+
+## 2026-10-04 — Published
+
+- **Demo video:** uploaded to YouTube as unlisted (https://youtu.be/xm8uXu6VgaY), with the title, description and "not made for kids" set.
+  - The browser upload tool takes files under 10 MB, so the 15 MB master was re-encoded at CRF 25 to 9.2 MB, still 1080p with the full audio. A sample frame was checked to confirm the text stayed sharp.
+  - The Chrome extension disconnected during the upload, but the file had already gone through. Visibility (Unlisted) was confirmed in the dialog, and oEmbed returned 200 afterwards.
+- **Post:** published on DEV at https://dev.to/big14way/clearance-desk-an-agent-that-catches-the-admission-youd-lose-at-clearance-36e8.
+  - Tags: devchallenge, sanitychallenge, sanity, ai. Cover image uploaded. Embedded video and GitHub card.
+  - The human chose the AI disclosure "Fully Autonomous", since I wrote the text.
+  - Before publishing, the preview rendered the YouTube iframe, the GitHub card, 10 images and 4 tables with no template errors. Afterwards the page returned 200 when logged out.
+  - The transcript embed was left out: the human didn't ask for the session to be published.
+- **One snag:** my click on the tags field landed in the title, because the long title had wrapped and pushed the field down, so the tags were typed into the title. Fixed by setting the title directly and selecting the tags field by its element.
