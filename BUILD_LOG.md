@@ -337,3 +337,9 @@ What changed:
     - headless browser, production, with Vercel's Brotli compression: step at 5 s, verdict at 8 s, done at 16 s
   - So the live progress really does stream through compression. The footage was then re-recorded against production itself.
   - One test-only snag: the first production probe clicked a sample before React had hydrated, so nothing happened. It now waits for network idle.
+- **Fixed the stale KB entry at the source** (the human gave Chrome access).
+  - In the Context app, the `post_utme_screening` entry's UNILAG paragraph still read "O'level upload deadline: Friday, 14 August 2026", citing only the original Post-UTME notice.
+  - I used **Rewrite this part** on that paragraph with a standing rule: the deadline is Monday 24 August 2026, extended from 14 August, and any entry giving it must say so. Then I used **Save & rebuild**.
+  - The rebuilt entry reads "Monday, 24 August 2026 (extended from the original Friday, 14 August 2026)".
+  - Checked through the MCP endpoint: all 13 key facts across the five universities survived the rebuild, and no new issues appeared. The instructions are now 11 (5 manual, 6 from resolved issues).
+  - The live `/api/ask` now gets the same date from both entries.

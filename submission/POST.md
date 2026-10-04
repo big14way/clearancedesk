@@ -146,7 +146,9 @@ I wrote 4 instructions by hand:
 
 ![A follow-up answered from the Knowledge Base, with official sources](https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/post/07-followup-phone.png)
 
-Building this exposed a real Knowledge Base problem. Its `post_utme_screening` entry still gives UNILAG's original upload deadline (14 August), even though I resolved that conflict in favour of the extension (24 August), which the `awaiting_results_and_olevel_upload` entry has. The follow-up agent now reads both entries for deadline questions and lets the later notice win, so it answers "extended to 24 August; the earlier date was 14 August".
+Building this exposed a real Knowledge Base problem. Its `post_utme_screening` entry still gave UNILAG's original upload deadline (14 August), even though I had resolved that conflict in favour of the extension (24 August). I fixed it at the source, with Context's **"Rewrite this part"** on that paragraph. That creates a standing rule every future build honours: *"UNILAG's 2026/2027 O'level upload deadline … is Monday, 24 August 2026 … extended from the original Friday, 14 August 2026."* The entry rebuilt with the corrected line, and every other fact on the page survived. The follow-up agent also keeps a general safeguard: when entries give different dates, the later notice wins.
+
+![The new standing instruction in Sanity Context](https://raw.githubusercontent.com/big14way/clearancedesk/main/submission/screenshots/21-instruction-unilag-deadline.png)
 
 ### 5. Would keyword search get the same answer? The eval
 
