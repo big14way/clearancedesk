@@ -355,3 +355,12 @@ What changed:
   - Before publishing, the preview rendered the YouTube iframe, the GitHub card, 10 images and 4 tables with no template errors. Afterwards the page returned 200 when logged out.
   - The transcript embed was left out: the human didn't ask for the session to be published.
 - **One snag:** my click on the tags field landed in the title, because the long title had wrapped and pushed the field down, so the tags were typed into the title. Fixed by setting the title directly and selecting the tags field by its element.
+- **Shared on social, after the human read and approved the drafts:**
+  - X: one long post (the human has Premium) with the cover "Scored 301 in UTME. Still rejected at clearance.", tagging @sanity_io, @claudeai and @ThePracticalDev, with no hashtags as asked. https://x.com/Big14teru/status/2107053344485253408
+  - LinkedIn: article-style post with the same cover and alt text, tagging the Sanity and DEV Community company pages, picked by logo from several same-name pages. https://www.linkedin.com/feed/update/urn:li:activity:7512821189971578880/
+  - LinkedIn snags:
+    - Pasting turned blank lines into nothing. Fixed by inserting empty paragraphs through the editor's own Tiptap API, because simulated Return keys were ignored.
+    - A URL in the text made LinkedIn attach a link-preview card, which hides the media buttons. I removed the card; the links stay in the text.
+    - LinkedIn opens the native file picker from code. I briefly intercepted that call so the upload tool could fill the input, then restored it.
+    - Typing the alt text dropped three characters ("rejcted", "eigible", "226/2027"). Caught by reading the value back and fixed.
+    - The YouTube description, typed the same way, was checked against the live page and matches exactly.
